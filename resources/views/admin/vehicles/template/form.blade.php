@@ -48,7 +48,7 @@
 <div class="form-row">
     <div class="form-group col-4">
         {!! Form::label('plate', 'Placa') !!}
-        {!! Form::number('plate', null, ['class' => 'form-control', 'placeholder' => 'Placa', 'required']) !!}
+        {!! Form::text('plate', null, ['class' => 'form-control', 'placeholder' => 'Placa', 'required']) !!}
     </div>
     <div class="form-group col-4">
         {!! Form::label('year', 'Año') !!}

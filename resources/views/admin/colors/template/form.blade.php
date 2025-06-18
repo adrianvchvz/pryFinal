@@ -3,22 +3,24 @@
     {!! Form::text('name', null, [
         'class' => 'form-control',
         'placeholder' => 'Nombre del color',
-        'required'
-    ]) !!}
-</div>
-<div class="form-group">
-    {!! Form::label('colorPicker', 'Elegir color') !!}
-    <input type="color" id="colorPicker" class="form-control" style="width: 60px; padding: 2px;">
-</div>
-<div class="form-group">
-    {!! Form::label('code', 'Código RGB') !!}
-    {!! Form::text('code', null, [
-        'class' => 'form-control',
-        'placeholder' => 'Código RGB',
-        'id' => 'code',
-        'readonly',
         'required',
     ]) !!}
+</div>
+<div class="form-row">
+    <div class="form-group col-2">
+        {!! Form::label('colorPicker', 'Elegir color') !!}
+        <input type="color" id="colorPicker" class="form-control" style="width: 80px; padding: 2px;">
+    </div>
+    <div class="form-group col-10">
+        {!! Form::label('code', 'Código RGB') !!}
+        {!! Form::text('code', null, [
+            'class' => 'form-control',
+            'placeholder' => 'Código RGB',
+            'id' => 'code',
+            'readonly',
+            'required',
+        ]) !!}
+    </div>
 </div>
 <div class="form-group">
     {!! Form::label('description', 'Descripción') !!}

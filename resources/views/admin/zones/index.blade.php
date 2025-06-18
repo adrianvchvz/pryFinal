@@ -1,9 +1,6 @@
 @extends('adminlte::page')
 
-@section('title', 'Vehículos')
-
-<!--@section('content_header')
-@stop-->
+@section('title', 'Zonas')
 
 @section('content')
     <div class="p-2"></div>
@@ -11,19 +8,18 @@
         <div class="card-header">
             <button type="button" class="btn btn-primary float-right" id="btnNuevo"><i class="fas fa-folder-plus"></i>
                 Nuevo</button>
-            <h3>Vehículos</h3>
+            <h3>Zonas</h3>
         </div>
-        <div class="card-body">
-            <table class="display" id="datatable">
+        <div class="card-body table-responsive">
+            <table class="table table-striped" id="datatable">
                 <thead>
                     <tr>
-                        <th>Imagen</th>
-                        <th>Nombre</th>
-                        <th>Placa</th>
-                        <th>Marca</th>
-                        <th>Modelo</th>
-                        <th>Tipo</th>
-                        <th>Año</th>
+                        <th>Zona</th>
+                        <th>Área</th>
+                        <th>Descripción</th>
+                        <th>Creación</th>
+                        <th>Actualización</th>
+                        <th></th>
                         <th></th>
                         <th></th>
                         <th></th>
@@ -38,7 +34,7 @@
     <!-- Modal -->
     <div class="modal fade" id="ModalCenter" tabindex="-1" role="dialog" aria-labelledby="ModalCenterTitle"
         aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered modal-xl" role="document">
+        <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title" id="ModalLongTitle"></h5>
@@ -61,38 +57,35 @@
                 "language": {
                     "url": "//cdn.datatables.net/plug-ins/1.10.16/i18n/Spanish.json"
                 },
-                "ajax": "{{ route('admin.vehicles.index') }}",
+                "ajax": "{{ route('admin.zones.index') }}",
                 "columns": [{
-                        "data": "image",
-                        "width": "4%",
-                        "orderable": false,
-                        "searchable": false
+                        "data": "name",
                     },
                     {
-                        "data": "name"
+                        "data": "area",
                     },
                     {
-                        "data": "plate"
+                        "data": "description",
                     },
                     {
-                        "data": "brand_name"
+                        "data": "created_at"
                     },
                     {
-                        "data": "model_name"
+                        "data": "updated_at"
                     },
                     {
-                        "data": "type_name"
-                    },
-                    {
-                        "data": "year"
-                    },
-                    {
-                        "data": "images",
-                        "orderable": false,
+                        "data": "coords",
+                        "orderable": true,
                         "searchable": false,
                         "width": "4%",
-
                     },
+                    {
+                        "data": "map",
+                        "orderable": true,
+                        "searchable": false,
+                        "width": "4%",
+                    },
+
                     {
                         "data": "edit",
                         "orderable": false,
@@ -107,19 +100,18 @@
                         "width": "4%",
 
                     },
-                ]
+                ],
             });
         })
 
         $('#btnNuevo').click(function() {
             $.ajax({
-                url: "{{ route('admin.vehicles.create') }}",
+                url: "{{ route('admin.zones.create') }}",
                 type: "GET",
                 success: function(response) {
-                    $('.modal-title').html("Nuevo vehículo");
+                    $('.modal-title').html("Nueva zona");
                     $('#ModalCenter .modal-body').html(response);
                     $('#ModalCenter').modal('show');
-
                     $('#ModalCenter form').on('submit', function(e) {
                         e.preventDefault();
                         var form = $(this);
@@ -155,48 +147,16 @@
             })
         })
 
-        // Evento para botón de imágenes (galería)
-        $(document).on('click', '.btnImages', function() {
-            var vehicleId = $(this).attr('id'); // id del vehículo en el botón
+        $(document).on('click', '.btnMap', function() {
+            var id = $(this).attr("id");
+
             $.ajax({
-                url: '/admin/vehicles/' + vehicleId + '/images',
+                url: "{{ route('admin.zonecoords.show', 'id') }}".replace('id', id),
                 type: "GET",
                 success: function(response) {
-                    $('.modal-title').html("Galería de fotos del vehículo");
+                    $('.modal-title').html("Visualización del perímetro");
                     $('#ModalCenter .modal-body').html(response);
                     $('#ModalCenter').modal('show');
-
-                    $('#ModalCenter form').on('submit', function(e) {
-                        e.preventDefault();
-                        var form = $(this);
-                        var formdata = new FormData(this);
-                        $.ajax({
-                            url: form.attr('action'),
-                            type: form.attr('method'),
-                            data: formdata,
-                            processData: false,
-                            contentType: false,
-                            success: function(response) {
-                                $('#ModalCenter').modal('hide');
-                                refreshTable();
-                                Swal.fire({
-                                    title: "Proceso exitoso",
-                                    icon: "success",
-                                    text: response.message,
-                                    draggable: true
-                                });
-                            },
-                            error: function(xhr) {
-                                var response = xhr.responseJSON;
-                                Swal.fire({
-                                    title: "Error",
-                                    icon: "error",
-                                    text: response.message,
-                                    draggable: true
-                                });
-                            }
-                        })
-                    })
                 }
             });
         });
@@ -205,10 +165,10 @@
         $(document).on('click', '.btnEditar', function() {
             var id = $(this).attr("id");
             $.ajax({
-                url: "{{ route('admin.vehicles.edit', 'id') }}".replace('id', id),
+                url: "{{ route('admin.zones.edit', 'id') }}".replace('id', id),
                 type: "GET",
                 success: function(response) {
-                    $('.modal-title').html("Editar vehículo");
+                    $('.modal-title').html("Editar Zona");
                     $('#ModalCenter .modal-body').html(response);
                     $('#ModalCenter').modal('show');
 
@@ -294,4 +254,3 @@
         }
     </script>
 @endsection
-

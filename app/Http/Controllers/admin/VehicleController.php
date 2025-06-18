@@ -67,22 +67,45 @@ class VehicleController extends Controller
      */
     public function store(Request $request)
     {
+        $request->validate([
+            'name' => ['required', 'unique:vehicles,name'],
+            'plate' => ['required', 'regex:/^[A-Z0-9]{6}$|^[A-Z0-9]{2}-[A-Z0-9]{4}$|^[A-Z0-9]{3}-[A-Z0-9]{3}$/i', 'unique:vehicles,plate'],
+            'year' => ['required', 'digits:4', 'integer', 'min:1900', 'max:' . date('Y')],
+            'code' => ['required', 'unique:vehicles,code'],
+        ], [
+            'name.required' => 'El nombre del vehículo es obligatorio.',
+            'name.unique' => 'Este nombre ya está registrado.',
+            'plate.regex' => 'El formato de la placa no es válido (ej: XXXXXX, XX-XXXX o XXX-XXX).',
+            'plate.required' => 'El campo placa es obligatorio.',
+            'plate.unique' => 'Esta placa ya está registrada.',
+            'code.unique' => 'Este código ya está en uso.',
+            'year.required' => 'El campo año es obligatorio.',
+            'year.digits' => 'El año debe tener 4 dígitos.',
+            'year.min' => 'El año debe ser mayor o igual a 1900.',
+            'year.max' => 'El año no puede ser mayor al actual.',
+        ]);
+
+
         try {
             $vehicle = Vehicle::create($request->except('image'));
-            if ($request->image != "") {
+
+            if ($request->hasFile('image')) {
                 $image = $request->file("image")->store("public/vehicle_images/" . $vehicle->id);
                 $urlImage = Storage::url($image);
+
                 Vehicleimage::create([
                     "image" => $urlImage,
                     "profile" => 1,
                     "vehicle_id" => $vehicle->id
                 ]);
             }
+
             return response()->json(['message' => 'Vehículo registrado correctamente'], 200);
         } catch (\Throwable $th) {
-            return response()->json(['message' => 'Hubo un error en el registro' . $th->getMessage()], 500);
+            return response()->json(['message' => 'Hubo un error en el registro: ' . $th->getMessage()], 500);
         }
     }
+
 
     /**
      * Display the specified resource.
@@ -112,15 +135,34 @@ class VehicleController extends Controller
      */
     public function update(Request $request, string $id)
     {
+        $request->validate([
+            'name' => ['required', 'unique:vehicles,name,' . $id],
+            'plate' => ['required', 'regex:/^[A-Z0-9]{6}$|^[A-Z0-9]{2}-[A-Z0-9]{4}$|^[A-Z0-9]{3}-[A-Z0-9]{3}$/i', 'unique:vehicles,plate'],
+            'year' => ['required', 'digits:4', 'integer', 'min:1900', 'max:' . date('Y')],
+            'code' => ['required', 'unique:vehicles,code'],
+        ], [
+            'name.required' => 'El nombre del vehículo es obligatorio.',
+            'name.unique' => 'Este nombre ya está registrado.',
+            'plate.regex' => 'El formato de la placa no es válido (ej: XXXXXX, XX-XXXX o XXX-XXX).',
+            'plate.required' => 'El campo placa es obligatorio.',
+            'plate.unique' => 'Esta placa ya está registrada.',
+            'code.unique' => 'Este código ya está en uso.',
+            'year.required' => 'El campo año es obligatorio.',
+            'year.digits' => 'El año debe tener 4 dígitos.',
+            'year.min' => 'El año debe ser mayor o igual a 1900.',
+            'year.max' => 'El año no puede ser mayor al actual.',
+        ]);
+
+
         try {
-            $vehicle = Vehicle::find($id);
+            $vehicle = Vehicle::findOrFail($id);
             $vehicle->update($request->except("image"));
 
-            if ($request->image != "") {
+            if ($request->hasFile('image')) {
                 $image = $request->file("image")->store("public/vehicle_images/" . $vehicle->id);
                 $urlImage = Storage::url($image);
 
-                DB::select("UPDATE vehicleimages SET profile = 0 WHERE vehicle_id=$id");
+                DB::table('vehicleimages')->where('vehicle_id', $id)->update(['profile' => 0]);
 
                 Vehicleimage::create([
                     "image" => $urlImage,
@@ -128,11 +170,13 @@ class VehicleController extends Controller
                     "vehicle_id" => $vehicle->id
                 ]);
             }
-            return response()->json(['message' => 'Vehículo actualizado correctamente', 200]);
+
+            return response()->json(['message' => 'Vehículo actualizado correctamente'], 200);
         } catch (\Throwable $th) {
-            return response()->json(['message' => 'Hubo un error en el registro' . $th->getMessage()], 500);
+            return response()->json(['message' => 'Hubo un error en el registro: ' . $th->getMessage()], 500);
         }
     }
+
 
     /**
      * Remove the specified resource from storage.

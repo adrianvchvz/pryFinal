@@ -358,7 +358,7 @@ return [
         ['header' => 'GESTIÓN DE ZONAS'],
         [
             'text' => 'Zonas',
-            'url' => 'admin.brands.index',
+            'route' => 'admin.zones.index',
             'icon' => 'fas fa-solid fa-map',
         ],
         [

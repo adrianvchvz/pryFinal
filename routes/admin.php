@@ -13,6 +13,8 @@ use App\Http\Controllers\admin\VacationController;
 use App\Http\Controllers\admin\VehicleController;
 use App\Http\Controllers\admin\VehicleimageController;
 use App\Http\Controllers\admin\VehicletypeController;
+use App\Http\Controllers\admin\ZoneController;
+use App\Http\Controllers\admin\ZonecoordController;
 use Illuminate\Support\Facades\Route;
 
 Route::resource('/', AdminController::class)->names('admin');
@@ -43,6 +45,6 @@ Route::resource('/vacations', VacationController::class)->names('admin.vacations
 Route::get('attendances', [AttendanceController::class, 'index'])->name('admin.attendances.index');
 Route::get('attendances/filter', [AttendanceController::class, 'filter'])->name('admin.attendances.filter');
 
-
-
+Route::resource('zones', ZoneController::class)->names('admin.zones');
+Route::resource('zonecoords', ZonecoordController::class)->names('admin.zonecoords');
 
