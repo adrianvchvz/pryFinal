@@ -363,7 +363,7 @@ return [
         ],
         [
             'text' => 'Rutas',
-            'url' => 'admin.models.index',
+            'route' => 'admin.routes.index',
             'icon' => 'fas fa-solid fa-route',
         ],
         ['header' => 'GESTIÓN DE PROGRAMACIÓN'],

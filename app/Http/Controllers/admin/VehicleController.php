@@ -173,7 +173,7 @@ class VehicleController extends Controller
 
             return response()->json(['message' => 'Vehículo actualizado correctamente'], 200);
         } catch (\Throwable $th) {
-            return response()->json(['message' => 'Hubo un error en el registro: ' . $th->getMessage()], 500);
+            return response()->json(['message' => 'Hubo un error en la actualización: ' . $th->getMessage()], 500);
         }
     }
 
@@ -204,7 +204,7 @@ class VehicleController extends Controller
 
             return response()->json(['message' => 'Vehículo eliminado correctamente', 200]);
         } catch (\Throwable $th) {
-            return response()->json(['message' => 'Hubo un error en el registro' . $th->getMessage()], 500);
+            return response()->json(['message' => 'Hubo un error en la eliminación' . $th->getMessage()], 500);
         }
     }
 }

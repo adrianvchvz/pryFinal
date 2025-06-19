@@ -66,9 +66,9 @@ class ZoneController extends Controller
                 "name" => "unique:zones"
             ]);
             Zone::create($request->all());
-            return response()->json(['message' => 'Zona registrada'], 200);
+            return response()->json(['message' => 'Zona registrada correctamente'], 200);
         } catch (\Throwable $th) {
-            return response()->json(['message' => 'Error en la actualización: ' . $th->getMessage()], 500);
+            return response()->json(['message' => 'Hubo un error en el registro: ' . $th->getMessage()], 500);
         }
     }
 
@@ -119,8 +119,7 @@ class ZoneController extends Controller
             $zone->update($request->all());
             return response()->json(['message' => 'Zona actualizada correctamente'], 200);
         } catch (\Throwable $th) {
-
-            return response()->json(['message' => 'Error en la actualización: ' . $th->getMessage()], 500);
+            return response()->json(['message' => 'Hubo un error en la actualización: ' . $th->getMessage()], 500);
         }
     }
 
@@ -134,7 +133,7 @@ class ZoneController extends Controller
             $zone->delete();
             return response()->json(['message' => 'Zona eliminada correctamente'], 200);
         } catch (\Throwable $th) {
-            return response()->json(['message' => 'Error en la eliminación: ' . $th->getMessage()], 500);
+            return response()->json(['message' => 'Hubo un error en la eliminación: ' . $th->getMessage()], 500);
         }
     }
 }

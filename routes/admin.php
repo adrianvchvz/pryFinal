@@ -9,6 +9,8 @@ use App\Http\Controllers\admin\ColorController;
 use App\Http\Controllers\admin\ContractController;
 use App\Http\Controllers\admin\EmployeeController;
 use App\Http\Controllers\admin\EmployeetypeController;
+use App\Http\Controllers\admin\RouteController;
+use App\Http\Controllers\admin\RoutezoneController;
 use App\Http\Controllers\admin\VacationController;
 use App\Http\Controllers\admin\VehicleController;
 use App\Http\Controllers\admin\VehicleimageController;
@@ -47,4 +49,9 @@ Route::get('attendances/filter', [AttendanceController::class, 'filter'])->name(
 
 Route::resource('zones', ZoneController::class)->names('admin.zones');
 Route::resource('zonecoords', ZonecoordController::class)->names('admin.zonecoords');
+
+Route::resource('routes', RouteController::class)->names('admin.routes');
+Route::resource('routezones', RoutezoneController::class)->names('admin.routezones');
+Route::get('routezones/create/{route_id}', [RoutezoneController::class, 'create'])
+    ->name('admin.routezones.create');
 

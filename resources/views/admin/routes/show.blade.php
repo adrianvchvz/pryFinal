@@ -1,50 +1,47 @@
 @extends('adminlte::page')
 
-@section('title', 'Zonas')
+@section('title', 'Rutas')
 
 @section('content')
     <div class="p-2"></div>
     <div class="card">
         <div class="card-header">
-            <h3>Perímetro de la zona</h3>
+            <h3>Rutas por zonas</h3>
         </div>
         <div class="card-body">
             <div class="row">
-                <div class="col-3">
+                <div class="col-6">
                     <div class="card">
                         <div class="card-body">
                             <label>
-                                <span class="font-weight-bold">Zona:</span> <span
-                                    class="font-weight-normal">{{ $zone->name }}</span>
+                                <span class="font-weight-bold">Ruta: </span> <span
+                                    class="font-weight-normal">{{ $route->name }}</span>
                             </label>
                             <br>
                             <label>
-                                <span class="font-weight-bold">Área:</span> <span
-                                    class="font-weight-normal">{{ $zone->area }}</span>
+                                <span class="font-weight-bold">Latitud y Longitud Inicial: </span> <span
+                                    class="font-weight-normal"> ({{ $route->latitude_start }},
+                                    {{ $route->longitude_start }})</span>
                             </label>
                             <br>
                             <label>
-                                <span class="font-weight-bold">Descripción:</span>
-                                <span class="font-weight-normal d-block text-wrap" style="word-break: break-word;">
-                                    {{ $zone->description }}
-                                </span>
+                                <span class="font-weight-bold">Latitud y Longitud Final: </span> <span
+                                    class="font-weight-normal"> ({{ $route->latitude_end }},
+                                    {{ $route->longitude_end }})</span>
                             </label>
                         </div>
                     </div>
-                </div>
-                <div class="col-9">
                     <div class="card">
                         <div class="card-header">
-                            <button class="btn btn-primary float-right" id="btnNuevo" data-id={{ $zone->id }}><i
+                            <button class="btn btn-primary float-right" id="btnNuevo" data-id={{ $route->id }}><i
                                     class="fas fa-plus"></i></button>
-                            <h4>Coordenadas</h4>
+                            <h4>Lista de Zonas</h4>
                         </div>
                         <div class="card-body">
                             <table class="display" id="datatable">
                                 <thead>
                                     <tr>
-                                        <th>Latitud</th>
-                                        <th>Longitud</th>
+                                        <th>Zonas</th>
                                         <th></th>
                                     </tr>
                                 </thead>
@@ -52,17 +49,25 @@
                         </div>
                     </div>
                 </div>
+                <div class="col-6">
+                    <div class="card">
+                        <div class="card-header">Visualización del trayecto de la ruta</div>
+                        <div class="card-body">
+                            <div id="map" style="height:400px"></div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
         <div class="card-footer">
-            <a href="{{ route('admin.zones.index') }}" class="btn btn-danger float-right">
+            <a href="{{ route('admin.routes.index') }}" class="btn btn-danger float-right">
                 <i></i>Retornar</a>
         </div>
     </div>
     <!-- Modal -->
     <div class="modal fade" id="ModalCenter" tabindex="-1" role="dialog" aria-labelledby="ModalCenterTitle"
         aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered modal-xl" role="document">
+        <div class="modal-dialog modal-dialog-centered" role="document">
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title" id="ModalLongTitle"></h5>
@@ -77,7 +82,6 @@
         </div>
     </div>
 @stop
-
 @section('js')
     <script>
         $(document).ready(function() {
@@ -85,23 +89,18 @@
                 "language": {
                     "url": "//cdn.datatables.net/plug-ins/1.10.16/i18n/Spanish.json"
                 },
-                "ajax": "{{ route('admin.zones.show', $zone->id) }}",
+                "ajax": "{{ route('admin.routezones.show', $route->id) }}",
                 "columns": [{
-                        "data": "latitude",
+                        "data": "zone_name",
                         "orderable": false,
-                        "searchable": false,
-                    },
-                    {
-                        "data": "longitude",
-                        "orderable": false,
-                        "searchable": false,
+                        "searchable": false
                     },
                     {
                         "data": "delete",
                         "orderable": false,
-                        "searchable": false,
+                        "searchable": false
                     }
-                ],
+                ]
             });
         })
 
@@ -109,7 +108,7 @@
             var id = $(this).attr('data-id');
 
             $.ajax({
-                url: "{{ route('admin.zonecoords.edit', '_id') }}".replace('_id', id),
+                url: "{{ route('admin.routezones.create', '_id') }}".replace('_id', id),
                 type: "GET",
                 success: function(response) {
                     $('.modal-title').html("Nueva coordenada");
@@ -196,5 +195,97 @@
             var table = $('#datatable').DataTable();
             table.ajax.reload(null, false);
         }
+        // Variables con datos desde el backend
+        var route = {
+            start: {
+                lat: {{ $route->latitude_start }},
+                lng: {{ $route->longitude_start }}
+            },
+            end: {
+                lat: {{ $route->latitude_end }},
+                lng: {{ $route->longitude_end }}
+            }
+        };
+
+        // Zona(s) con sus coordenadas (pasadas desde el backend)
+        var zones = @json($perimeter);
+
+        // Inicializar el mapa
+        function initMap() {
+            var mapOptions = {
+                center: {
+                    lat: route.start.lat,
+                    lng: route.start.lng
+                },
+                zoom: 15
+            };
+            var map = new google.maps.Map(document.getElementById('map'), mapOptions);
+
+            // Dibujar la ruta
+            var routePath = new google.maps.Polyline({
+                path: [route.start, route.end],
+                geodesic: true,
+                strokeColor: '#0000FF',
+                strokeOpacity: 1.0,
+                strokeWeight: 2,
+                map: map
+            });
+
+            // Marcadores de inicio y fin de la ruta
+            new google.maps.Marker({
+                position: route.start,
+                map: map,
+                title: 'Inicio de la Ruta'
+            });
+
+            new google.maps.Marker({
+                position: route.end,
+                map: map,
+                title: 'Final de la Ruta'
+            });
+
+            // Dibujar el perímetro de las zonas
+            zones.forEach(function(zone) {
+                var zonePolygon = new google.maps.Polygon({
+                    paths: zone.coords, // Coordenadas de la zona
+                    strokeColor: '#FF0000', // Color del perímetro
+                    strokeOpacity: 0.8, // Opacidad del perímetro
+                    strokeWeight: 2, // Grosor del perímetro
+                    fillColor: '#FF0000', // Color de relleno
+                    fillOpacity: 0.35, // Opacidad de relleno
+                    map: map
+                });
+
+                // Opcional: agregar un marcador en el centro de la zona
+                var center = getPolygonCenter(zone.coords);
+                new google.maps.Marker({
+                    position: center,
+                    map: map,
+                    title: zone.name
+                });
+            });
+        }
+
+        // Función para calcular el centro del polígono (opcional)
+        function getPolygonCenter(coords) {
+            var latSum = 0;
+            var lngSum = 0;
+
+            coords.forEach(function(coord) {
+                latSum += coord.lat;
+                lngSum += coord.lng;
+            });
+
+            var latCenter = latSum / coords.length;
+            var lngCenter = lngSum / coords.length;
+
+            return {
+                lat: latCenter,
+                lng: lngCenter
+            };
+        }
     </script>
+
+    <script src="https://maps.googleapis.com/maps/api/js?key={{ env('GOOGLE_MAPS_API_KEY') }}&callback=initMap" async
+        defer></script>
 @endsection

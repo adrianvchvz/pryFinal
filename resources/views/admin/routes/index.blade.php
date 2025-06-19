@@ -1,68 +1,38 @@
 @extends('adminlte::page')
 
-@section('title', 'Zonas')
+@section('title', 'Rutas')
 
 @section('content')
     <div class="p-2"></div>
     <div class="card">
         <div class="card-header">
-            <h3>Perímetro de la zona</h3>
+            <button type="button" class="btn btn-primary float-right" id="btnNuevo"><i class="fas fa-folder-plus"></i>
+                Nuevo</button>
+            <h3>Rutas</h3>
         </div>
         <div class="card-body">
-            <div class="row">
-                <div class="col-3">
-                    <div class="card">
-                        <div class="card-body">
-                            <label>
-                                <span class="font-weight-bold">Zona:</span> <span
-                                    class="font-weight-normal">{{ $zone->name }}</span>
-                            </label>
-                            <br>
-                            <label>
-                                <span class="font-weight-bold">Área:</span> <span
-                                    class="font-weight-normal">{{ $zone->area }}</span>
-                            </label>
-                            <br>
-                            <label>
-                                <span class="font-weight-bold">Descripción:</span>
-                                <span class="font-weight-normal d-block text-wrap" style="word-break: break-word;">
-                                    {{ $zone->description }}
-                                </span>
-                            </label>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-9">
-                    <div class="card">
-                        <div class="card-header">
-                            <button class="btn btn-primary float-right" id="btnNuevo" data-id={{ $zone->id }}><i
-                                    class="fas fa-plus"></i></button>
-                            <h4>Coordenadas</h4>
-                        </div>
-                        <div class="card-body">
-                            <table class="display" id="datatable">
-                                <thead>
-                                    <tr>
-                                        <th>Latitud</th>
-                                        <th>Longitud</th>
-                                        <th></th>
-                                    </tr>
-                                </thead>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="card-footer">
-            <a href="{{ route('admin.zones.index') }}" class="btn btn-danger float-right">
-                <i></i>Retornar</a>
+            <table class="display" id="datatable">
+                <thead>
+                    <tr>
+                        <th>Nombre</th>
+                        <th>Estado</th>
+                        <th>Creación</th>
+                        <th>Actualización</th>
+                        <th></th>
+                        <th></th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                </tbody>
+            </table>
         </div>
     </div>
+
     <!-- Modal -->
     <div class="modal fade" id="ModalCenter" tabindex="-1" role="dialog" aria-labelledby="ModalCenterTitle"
         aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered modal-xl" role="document">
+        <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title" id="ModalLongTitle"></h5>
@@ -76,6 +46,7 @@
             </div>
         </div>
     </div>
+
 @stop
 
 @section('js')
@@ -85,34 +56,104 @@
                 "language": {
                     "url": "//cdn.datatables.net/plug-ins/1.10.16/i18n/Spanish.json"
                 },
-                "ajax": "{{ route('admin.zones.show', $zone->id) }}",
+                "ajax": "{{ route('admin.routes.index') }}",
                 "columns": [{
-                        "data": "latitude",
-                        "orderable": false,
-                        "searchable": false,
+                        "data": "name"
                     },
                     {
-                        "data": "longitude",
+                        "data": "status"
+                    },
+                    {
+                        "data": "created_at"
+                    },
+                    {
+                        "data": "updated_at"
+                    },
+                    {
+                        "data": "gps",
                         "orderable": false,
-                        "searchable": false,
+                        "searchable": false
+                    },
+                    {
+                        "data": "edit",
+                        "orderable": false,
+                        "searchable": false
                     },
                     {
                         "data": "delete",
                         "orderable": false,
-                        "searchable": false,
+                        "searchable": false
                     }
-                ],
+                ]
             });
         })
 
-        $('#btnNuevo').click(function() {
-            var id = $(this).attr('data-id');
 
+        $('#btnNuevo').click(function() {
             $.ajax({
-                url: "{{ route('admin.zonecoords.edit', '_id') }}".replace('_id', id),
+                url: "{{ route('admin.routes.create') }}",
                 type: "GET",
                 success: function(response) {
-                    $('.modal-title').html("Nueva coordenada");
+                    $('.modal-title').html("Nueva zona");
+                    $('#ModalCenter .modal-body').html(response);
+                    $('#ModalCenter').modal('show');
+                    $('#ModalCenter form').on('submit', function(e) {
+                        e.preventDefault();
+                        var form = $(this);
+                        var formdata = new FormData(this);
+                        $.ajax({
+                            url: form.attr('action'),
+                            type: form.attr('method'),
+                            data: formdata,
+                            processData: false,
+                            contentType: false,
+                            success: function(response) {
+                                $('#ModalCenter').modal('hide');
+                                refreshTable();
+                                Swal.fire({
+                                    title: "Proceso exitoso",
+                                    icon: "success",
+                                    text: response.message,
+                                    draggable: true
+                                });
+                            },
+                            error: function(xhr) {
+                                var response = xhr.responseJSON;
+                                Swal.fire({
+                                    title: "Error",
+                                    icon: "error",
+                                    text: response.message,
+                                    draggable: true
+                                });
+                            }
+                        })
+                    })
+                }
+            })
+        })
+
+        $(document).on('click', '.btnMap', function() {
+            var id = $(this).attr("id");
+
+            $.ajax({
+                url: "{{ route('admin.routes.show', 'id') }}".replace('id', id),
+                type: "GET",
+                success: function(response) {
+                    $('.modal-title').html("Asignar zona en ruta");
+                    $('#ModalCenter .modal-body').html(response);
+                    $('#ModalCenter').modal('show');
+                }
+            });
+        });
+
+
+        $(document).on('click', '.btnEditar', function() {
+            var id = $(this).attr("id");
+            $.ajax({
+                url: "{{ route('admin.routes.edit', 'id') }}".replace('id', id),
+                type: "GET",
+                success: function(response) {
+                    $('.modal-title').html("Editar Ruta");
                     $('#ModalCenter .modal-body').html(response);
                     $('#ModalCenter').modal('show');
 

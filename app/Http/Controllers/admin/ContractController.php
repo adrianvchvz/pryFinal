@@ -104,17 +104,24 @@ class ContractController extends Controller
             }
         }
 
-        // Registro del contrato
-        $contract = Contract::create([
-            'employee_id' => $employeeId,
-            'contract_type_id' => $contractType,
-            'start_date' => $request->start_date,
-            'end_date' => $request->end_date,
-            'status' => $request->status ? 1 : 0,
-            'description' => $request->description,
-        ]);
+        try {
+            // Registro del contrato
+            Contract::create([
+                'employee_id' => $employeeId,
+                'contract_type_id' => $contractType,
+                'start_date' => $request->start_date,
+                'end_date' => $request->end_date,
+                'status' => $request->status ? 1 : 0,
+                'description' => $request->description,
+            ]);
 
-        return response()->json(['message' => 'Contrato registrado correctamente', 'contract' => $contract], 200);
+            return response()->json(['message' => 'Contrato registrado correctamente'], 200);
+        } catch (\Throwable $th) {
+            return response()->json(['message' => 'Hubo un error en el registro' . $th->getMessage(), 500]);
+        }
+
+
+        
     }
 
     /**
@@ -149,10 +156,9 @@ class ContractController extends Controller
         try {
             $contract = Contract::findOrFail($id);
             $contract->delete();
-
             return response()->json(['message' => 'Contrato eliminado correctamente'], 200);
-        } catch (\Exception $e) {
-            return response()->json(['message' => 'Error al eliminar el contrato: ' . $e->getMessage()], 500);
+        } catch (\Throwable $th) {
+            return response()->json(['message' => 'Hubo un error en la eliminación' . $th->getMessage()], 500);
         }
     }
 }

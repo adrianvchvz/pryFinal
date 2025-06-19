@@ -148,15 +148,9 @@ class VacationController extends Controller
                 'description'   => $request->description,
             ]);
 
-            return response()->json([
-                'success' => true,
-                'message' => 'Vacaciones registradas correctamente'
-            ], 200);
+            return response()->json(['message' => 'Vacaciones registradas correctamente'], 200);
         } catch (\Throwable $th) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Error al registrar: ' . $th->getMessage()
-            ], 500);
+            return response()->json(['message' => 'Hubo un error en el registro: ' . $th->getMessage()], 500);
         }
     }
 
@@ -256,7 +250,6 @@ class VacationController extends Controller
             ], 400);
         }
 
-        // ACTUALIZAR
         try {
             $vacation->update([
                 'year'          => $year,
@@ -266,15 +259,9 @@ class VacationController extends Controller
                 'pending_days'  => $diasPendientes - $request->days,
                 'description'   => $request->description,
             ]);
-            return response()->json([
-                'success' => true,
-                'message' => 'Vacaciones actualizadas correctamente'
-            ], 200);
+            return response()->json(['message' => 'Vacaciones actualizadas correctamente'], 200);
         } catch (\Throwable $th) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Error al registrar: ' . $th->getMessage()
-            ], 500);
+            return response()->json(['message' => 'Hubo un error en el registro: ' . $th->getMessage()], 500);
         }
     }
 
@@ -288,15 +275,9 @@ class VacationController extends Controller
             $vacation = Vacation::findOrFail($id);
             $vacation->delete();
 
-            return response()->json([
-                'success' => true,
-                'message' => 'Vacaciones eliminadas correctamente.'
-            ], 200);
-        } catch (\Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Error al eliminar el registro: ' . $e->getMessage()
-            ], 500);
+            return response()->json(['message' => 'Vacaciones eliminadas correctamente'], 200);
+        } catch (\Throwable $th) {
+            return response()->json(['message' => 'Hubo un error en el registro: ' . $th->getMessage()], 500);
         }
     }
 
