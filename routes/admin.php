@@ -1,7 +1,6 @@
 <?php
 
 use App\Http\Controllers\admin\AdminController;
-use App\Http\Controllers\admin\AttendaceController;
 use App\Http\Controllers\admin\AttendanceController;
 use App\Http\Controllers\admin\BrandController;
 use App\Http\Controllers\admin\BrandmodelController;
@@ -11,6 +10,7 @@ use App\Http\Controllers\admin\EmployeeController;
 use App\Http\Controllers\admin\EmployeetypeController;
 use App\Http\Controllers\admin\RouteController;
 use App\Http\Controllers\admin\RoutezoneController;
+use App\Http\Controllers\admin\ShiftController;
 use App\Http\Controllers\admin\VacationController;
 use App\Http\Controllers\admin\VehicleController;
 use App\Http\Controllers\admin\VehicleimageController;
@@ -44,14 +44,15 @@ Route::get('vacations/search', [VacationController::class, 'search'])->name('adm
 Route::get('vacations/check', [VacationController::class, 'check'])->name('admin.vacations.check');
 Route::resource('/vacations', VacationController::class)->names('admin.vacations');
 
-Route::get('attendances', [AttendanceController::class, 'index'])->name('admin.attendances.index');
+Route::get('/attendances', [AttendanceController::class, 'index'])->name('admin.attendances.index');
 Route::get('attendances/filter', [AttendanceController::class, 'filter'])->name('admin.attendances.filter');
 
-Route::resource('zones', ZoneController::class)->names('admin.zones');
-Route::resource('zonecoords', ZonecoordController::class)->names('admin.zonecoords');
+Route::resource('/zones', ZoneController::class)->names('admin.zones');
+Route::resource('/zonecoords', ZonecoordController::class)->names('admin.zonecoords');
 
-Route::resource('routes', RouteController::class)->names('admin.routes');
-Route::resource('routezones', RoutezoneController::class)->names('admin.routezones');
+Route::resource('/routes', RouteController::class)->names('admin.routes');
+Route::resource('/routezones', RoutezoneController::class)->names('admin.routezones');
 Route::get('routezones/create/{route_id}', [RoutezoneController::class, 'create'])
     ->name('admin.routezones.create');
 
+Route::resource('/shifts', ShiftController::class)->names('admin.shifts');

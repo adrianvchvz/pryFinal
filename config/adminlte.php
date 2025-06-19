@@ -369,7 +369,7 @@ return [
         ['header' => 'GESTIÓN DE PROGRAMACIÓN'],
         [
             'text' => 'Turnos',
-            'url' => 'admin.brands.index',
+            'route' => 'admin.shifts.index',
             'icon' => 'fas fa-solid fa-user-clock',
         ],
         [
