@@ -1,4 +1,4 @@
 {!! Form::open(['route' => 'admin.routes.store']) !!}
 @include('admin.routes.template.form')
-<button type='submit' class="btn btn-success"> <i class="fas fa-cloud-upload-alt"></i>Registrar</button>
+<button type='submit' class="btn btn-success" style="background-color: #f1f8ec; color: #397044;"> <i class="fas fa-cloud-upload-alt"></i>Registrar</button>
 {!! Form::close() !!}
