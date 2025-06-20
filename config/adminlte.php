@@ -374,7 +374,7 @@ return [
         ],
         [
             'text' => 'Programación',
-            'url' => 'admin.models.index',
+            'route' => 'admin.schedules.index',
             'icon' => 'fas fa-solid fa-clipboard-list',
         ],
     ],

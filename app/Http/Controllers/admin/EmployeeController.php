@@ -286,4 +286,45 @@ class EmployeeController extends Controller
             ]
         ]);
     }
+
+    public function available(Request $request)
+    {
+        
+        try {
+             $start_date = $request->input('start_date');
+        $end_date = $request->input('end_date');
+        $type_id = $request->input('type_id'); // 1: conductor, 2: ayudante
+
+        $empleados = Employee::where('type_id', $type_id)
+            // Empleados con al menos un contrato válido para el rango solicitado
+            ->whereExists(function ($q) use ($start_date, $end_date) {
+                $q->select(DB::raw(1))
+                    ->from('contracts')
+                    ->whereRaw('contracts.employee_id = employees.id')
+                    ->where(function ($contract) use ($start_date, $end_date) {
+                        // Contratos que inician antes del fin de la programación
+                        $contract->where('start_date', '<=', $end_date)
+                            // Y terminan después del inicio de la programación
+                            ->where(function ($end) use ($start_date) {
+                                $end->whereNull('end_date')
+                                    ->orWhere('end_date', '>=', $start_date);
+                            });
+                    });
+            })
+            // Excluir empleados con vacaciones que se crucen con el rango
+            ->whereNotExists(function ($q) use ($start_date, $end_date) {
+                $q->select(DB::raw(1))
+                    ->from('vacations')
+                    ->whereRaw('vacations.employee_id = employees.id')
+                    ->where('start_date', '<=', $end_date)
+                    ->where('end_date', '>=', $start_date);
+            })
+            ->selectRaw("id, CONCAT(names, ' ', lastnames) as fullname")
+            ->get();
+
+            return response()->json($empleados);
+        } catch (\Throwable $th) {
+           return response()->json(['message' => 'Hubo un error en la eliminación' . $th->getMessage()], 500);
+        }    
+    }
 }
