@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "fc686948ff41cfeda36b7bec0a6e37a8",
+    "content-hash": "0319a1f8b54511062a6368958a1427dd",
     "packages": [
         {
             "name": "almasaeed2010/adminlte",
@@ -48,6 +48,140 @@
                 "source": "https://github.com/ColorlibHQ/AdminLTE/tree/v3.2.0"
             },
             "time": "2022-02-07T20:33:09+00:00"
+        },
+        {
+            "name": "amendozaaguiar/laravel-lat-es",
+            "version": "12.0.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/amendozaaguiar/laravel-lat-es.git",
+                "reference": "01fca167b75473dbb0a10d8c1cc6bfd4e9bd5146"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/amendozaaguiar/laravel-lat-es/zipball/01fca167b75473dbb0a10d8c1cc6bfd4e9bd5146",
+                "reference": "01fca167b75473dbb0a10d8c1cc6bfd4e9bd5146",
+                "shasum": ""
+            },
+            "require": {
+                "illuminate/console": ">=5.4.0",
+                "illuminate/support": ">=5.4.0",
+                "php": ">=5.6"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "Amendozaaguiar\\LaravelLatEs\\LaravelLatEsServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Amendozaaguiar\\LaravelLatEs\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Anderson Mendoza",
+                    "role": "Developer"
+                }
+            ],
+            "description": "El paquete 'laravel-lat-es' ofrece traducciones en español para Laravel, garantizando que tus proyectos en Laravel tengan archivos de traducción en español por defecto. Con esta integración automática, podrás disfrutar de una experiencia de usuario más fluida y personalizada en tus aplicaciones de Laravel. Al utilizar las traducciones por defecto de Laravel, garantizas la coherencia y consistencia del idioma en toda tu aplicación, lo que mejora la usabilidad y la accesibilidad para tus usuarios hispanohablantes.",
+            "homepage": "https://github.com/amendozaaguiar/laravel-lat-es",
+            "keywords": [
+                "Automatico",
+                "Espanol",
+                "Integración",
+                "coherencia",
+                "desarrollo web",
+                "experiencia de usuario",
+                "idioma",
+                "laravel",
+                "localización",
+                "paquete",
+                "traduccion",
+                "usabilidad"
+            ],
+            "support": {
+                "issues": "https://github.com/amendozaaguiar/laravel-lat-es/issues",
+                "source": "https://github.com/amendozaaguiar/laravel-lat-es/tree/12.0.0"
+            },
+            "time": "2025-02-27T23:53:01+00:00"
+        },
+        {
+            "name": "amendozaaguiar/laraveles-spanish-for-jetstream",
+            "version": "1.7.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/amendozaaguiar/laraveles-spanish-for-jetstream.git",
+                "reference": "89be6c9c32919e53b26903090f27277b01f58f29"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/amendozaaguiar/laraveles-spanish-for-jetstream/zipball/89be6c9c32919e53b26903090f27277b01f58f29",
+                "reference": "89be6c9c32919e53b26903090f27277b01f58f29",
+                "shasum": ""
+            },
+            "require": {
+                "illuminate/console": ">=5.4.0",
+                "illuminate/support": ">=5.4.0",
+                "php": ">=5.6"
+            },
+            "require-dev": {
+                "orchestra/testbench": "^3.4|^4.0",
+                "phpunit/phpunit": "^5.6|^6.3|^7.0|^8.0"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "Laraveles\\Spanish\\SpanishServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Laraveles\\Spanish\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Anderson Mendoza"
+                },
+                {
+                    "name": "Israel Ortuño",
+                    "email": "ai.ortuno@gmail.com"
+                },
+                {
+                    "name": "Cesar Garcia",
+                    "email": "cesargb@gmail.com",
+                    "homepage": "https://github.com/cesargb",
+                    "role": "Developer"
+                }
+            ],
+            "description": "Conjunto de traducciones en español para Laravel con Jetstream",
+            "homepage": "https://github.com/amendozaaguiar/laraveles-spanish-for-jetstream",
+            "keywords": [
+                "jetstream",
+                "laravel",
+                "laraveles",
+                "spanish",
+                "traduccion"
+            ],
+            "support": {
+                "source": "https://github.com/amendozaaguiar/laraveles-spanish-for-jetstream/tree/1.7.0"
+            },
+            "abandoned": "https://github.com/amendozaaguiar/laravel-lat-es",
+            "time": "2022-09-13T03:11:12+00:00"
         },
         {
             "name": "bacon/bacon-qr-code",

@@ -6,6 +6,8 @@
     "license": "MIT",
     "require": {
         "php": "^8.1",
+        "amendozaaguiar/laravel-lat-es": "^12.0",
+        "amendozaaguiar/laraveles-spanish-for-jetstream": "^1.7",
         "guzzlehttp/guzzle": "^7.2",
         "jeroennoten/laravel-adminlte": "^3.15",
         "laravel/framework": "^10.10",
