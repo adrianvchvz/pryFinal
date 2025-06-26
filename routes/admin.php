@@ -11,7 +11,6 @@ use App\Http\Controllers\admin\EmployeetypeController;
 use App\Http\Controllers\admin\RouteController;
 use App\Http\Controllers\admin\RoutezoneController;
 use App\Http\Controllers\admin\ScheduleController;
-use App\Http\Controllers\admin\SchedulesController;
 use App\Http\Controllers\admin\ShiftController;
 use App\Http\Controllers\admin\VacationController;
 use App\Http\Controllers\admin\VehicleController;

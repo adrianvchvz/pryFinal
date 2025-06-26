@@ -155,7 +155,7 @@ class VehicleController extends Controller
 
 
         try {
-            $vehicle = Vehicle::findOrFail($id);
+            $vehicle = Vehicle::find($id);
             $vehicle->update($request->except("image"));
 
             if ($request->hasFile('image')) {

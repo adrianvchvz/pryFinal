@@ -105,7 +105,7 @@ class EmployeetypeController extends Controller
             $emptype->update($request->all());
             return response()->json(['message' => 'Tipo de empleado actualizado correctamente'], 200);
         } catch (\Throwable $th) {
-            return response()->json([['message' => 'Hubo un error en la actualización' . $th->getMessage()], 500]);
+            return response()->json(['message' => 'Hubo un error en la actualización' . $th->getMessage()], 500);
         }
     }
 

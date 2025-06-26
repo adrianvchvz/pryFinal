@@ -192,7 +192,7 @@ class ScheduleController extends Controller
             }
             return response()->json(['message' => 'Programación registrada correctamente'], 200);
         } catch (\Throwable $th) {
-            return response()->json(['message' => 'Hubo un error en el registro' . $th->getMessage(), 500]);
+            return response()->json(['message' => 'Hubo un error en el registro' . $th->getMessage()], 500);
         }
     }
 

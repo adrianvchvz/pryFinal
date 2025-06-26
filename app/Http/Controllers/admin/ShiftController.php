@@ -55,7 +55,7 @@ class ShiftController extends Controller
             Shift::create($request->all());
             return response()->json(['message' => 'Turno registrado correctamente'], 200);
         } catch (\Throwable $th) {
-            return response()->json(['message' => 'Hubo un error en el registro' . $th->getMessage(), 500]);
+            return response()->json(['message' => 'Hubo un error en el registro' . $th->getMessage()], 500);
         }
     }
 
