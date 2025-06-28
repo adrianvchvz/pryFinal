@@ -136,10 +136,11 @@ class VehicleController extends Controller
     public function update(Request $request, string $id)
     {
         $request->validate([
-            'name' => ['required', 'unique:vehicles,name,' . $id],
-            'plate' => ['required', 'regex:/^[A-Z0-9]{6}$|^[A-Z0-9]{2}-[A-Z0-9]{4}$|^[A-Z0-9]{3}-[A-Z0-9]{3}$/i', 'unique:vehicles,plate'],
-            'year' => ['required', 'digits:4', 'integer', 'min:1900', 'max:' . date('Y')],
-            'code' => ['required', 'unique:vehicles,code'],
+            'name' => 'required', 'unique:vehicles,name,' . $id,
+            'plate' => 'required', 'regex:/^[A-Z0-9]{6}$|^[A-Z0-9]{2}-[A-Z0-9]{4}$|^[A-Z0-9]{3}-[A-Z0-9]{3}$/i', 
+            'unique:vehicles,plate,' . $id,
+            'year' => 'required', 'digits:4', 'integer', 'min:1900', 'max:' . date('Y'),
+            'code' => 'required', 'unique:vehicles,code,' . $id,
         ], [
             'name.required' => 'El nombre del vehículo es obligatorio.',
             'name.unique' => 'Este nombre ya está registrado.',

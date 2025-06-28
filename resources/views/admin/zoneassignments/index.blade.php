@@ -1,6 +1,6 @@
 @extends('adminlte::page')
 
-@section('title', 'Programación')
+@section('title', 'Asignaciones')
 
 <!--@section('content_header')
 @stop-->
@@ -9,19 +9,18 @@
     <div class="p-2"></div>
     <div class="card">
         <div class="card-header">
-            <button type="button" class="btn btn-primary float-right ml-2" id="btnNuevo">
-                <i class="fas fa-folder-plus"></i> Nuevo
-            </button>
-            <h3>Programación</h3>
+            <button type="button" class="btn btn-primary float-right" id="btnNuevo"><i class="fas fa-folder-plus"></i>
+                Nuevo</button>
+            <h3>Asignaciones</h3>
         </div>
         <div class="card-body">
             <table class="display" id="datatable">
                 <thead>
                     <tr>
-                        <th>Nombre</th>
-                        <th>Fecha inicio</th>
-                        <th>Fecha fin</th>
-                        <th></th>
+                        <th>Zona</th>
+                        <th>Vehículo</th>
+                        <th>Turno</th>
+                        <th>Empleados</th>
                         <th></th>
                         <th></th>
                     </tr>
@@ -34,7 +33,7 @@
     <!-- Modal -->
     <div class="modal fade" id="ModalCenter" tabindex="-1" role="dialog" aria-labelledby="ModalCenterTitle"
         aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title" id="ModalLongTitle"></h5>
@@ -50,6 +49,10 @@
     </div>
 @stop
 
+
+@section('css')
+@stop
+
 @section('js')
 
     <script>
@@ -58,20 +61,18 @@
                 "language": {
                     "url": "//cdn.datatables.net/plug-ins/1.10.16/i18n/Spanish.json"
                 },
-                "ajax": "{{ route('admin.schedules.index') }}",
+                "ajax": "{{ route('admin.zoneassignments.index') }}",
                 "columns": [{
-                        "data": "name"
+                        "data": "zone_name"
                     },
                     {
-                        "data": "start_date"
+                        "data": "vehicle_name"
                     },
                     {
-                        "data": "end_date"
+                        "data": "shift_name"
                     },
                     {
-                        "data": "show",
-                        "orderable": false,
-                        "searchable": false
+                        "data": "empleados"
                     },
                     {
                         "data": "edit",
@@ -89,10 +90,10 @@
 
         $('#btnNuevo').click(function() {
             $.ajax({
-                url: "{{ route('admin.schedules.create') }}",
+                url: "{{ route('admin.zoneassignments.create') }}",
                 type: "GET",
                 success: function(response) {
-                    $('.modal-title').html("Nueva programación");
+                    $('.modal-title').html("Nueva asignación");
                     $('#ModalCenter .modal-body').html(response);
                     $('#ModalCenter').modal('show');
                     $('#ModalCenter form').on('submit', function(e) {
@@ -133,10 +134,10 @@
         $(document).on('click', '.btnEditar', function() {
             var id = $(this).attr("id");
             $.ajax({
-                url: "{{ route('admin.schedules.edit', 'id') }}".replace('id', id),
+                url: "{{ route('admin.zoneassignments.edit', 'id') }}".replace('id', id),
                 type: "GET",
                 success: function(response) {
-                    $('.modal-title').html("Editar programación");
+                    $('.modal-title').html("Editar asignación");
                     $('#ModalCenter .modal-body').html(response);
                     $('#ModalCenter').modal('show');
 

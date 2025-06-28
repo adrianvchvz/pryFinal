@@ -9,6 +9,11 @@ use Illuminate\Database\Eloquent\Model;
 class Employee extends Model
 {
     use HasFactory;
-    
+
     protected $guarded = [];
+
+    public function type()
+    {
+        return $this->belongsTo(Employeetype::class, 'type_id');
+    }
 }

@@ -372,6 +372,11 @@ return [
             'route' => 'admin.shifts.index',
             'icon' => 'fas fa-solid fa-user-clock',
         ],
+                [
+            'text' => 'Asignaciones',
+            'route' => 'admin.zoneassignments.index',
+            'icon' => 'fas fa-solid fa-list',
+        ],
         [
             'text' => 'Programación',
             'route' => 'admin.schedules.index',

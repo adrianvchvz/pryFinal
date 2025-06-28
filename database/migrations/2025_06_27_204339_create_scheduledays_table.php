@@ -13,9 +13,9 @@ return new class extends Migration
     {
         Schema::create('scheduledays', function (Blueprint $table) {
             $table->id();
-            $table->integer('day_of_week');
-            $table->unsignedBigInteger("schedule_id");
-            $table->foreign("schedule_id")->references("id")->on("schedules");
+            $table->date('date');
+            $table->unsignedBigInteger('schedule_id');
+            $table->foreign('schedule_id')->references('id')->on('schedules');
             $table->timestamps();
         });
     }

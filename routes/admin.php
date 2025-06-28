@@ -11,11 +11,13 @@ use App\Http\Controllers\admin\EmployeetypeController;
 use App\Http\Controllers\admin\RouteController;
 use App\Http\Controllers\admin\RoutezoneController;
 use App\Http\Controllers\admin\ScheduleController;
+use App\Http\Controllers\admin\ScheduledayController;
 use App\Http\Controllers\admin\ShiftController;
 use App\Http\Controllers\admin\VacationController;
 use App\Http\Controllers\admin\VehicleController;
 use App\Http\Controllers\admin\VehicleimageController;
 use App\Http\Controllers\admin\VehicletypeController;
+use App\Http\Controllers\admin\ZoneassignmentController;
 use App\Http\Controllers\admin\ZoneController;
 use App\Http\Controllers\admin\ZonecoordController;
 use Illuminate\Support\Facades\Route;
@@ -58,6 +60,8 @@ Route::get('routezones/create/{route_id}', [RoutezoneController::class, 'create'
 
 Route::resource('/shifts', ShiftController::class)->names('admin.shifts');
 
+Route::resource('/zoneassignments', ZoneassignmentController::class)->names('admin.zoneassignments');
 Route::resource('/schedules', ScheduleController::class)->names('admin.schedules');
+Route::resource('/scheduledays', ScheduledayController::class)->names('admin.scheduledays');
 
 

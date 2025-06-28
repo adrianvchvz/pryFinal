@@ -5,7 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Scheduleoccupant extends Model
+class Zoneassignment extends Model
 {
     use HasFactory;
 

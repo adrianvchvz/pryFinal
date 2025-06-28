@@ -10,4 +10,9 @@ class Schedule extends Model
     use HasFactory;
 
     protected $guarded = [];
+
+    public function days()
+    {
+        return $this->hasMany(Scheduleday::class);
+    }
 }
