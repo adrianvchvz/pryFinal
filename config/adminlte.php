@@ -299,90 +299,115 @@ return [
     */
 
     'menu' => [
-        [
-            'type' => 'darkmode-widget',
-            'topnav_right' => true,
-        ],
-        ['header' => 'GESTIÓN DE VEHÍCULOS'],
-        [
-            'text' => 'Marcas',
-            'route' => 'admin.brands.index',
-            'icon' => 'fas fa-copyright',
-        ],
-        [
-            'text' => 'Modelos',
-            'route' => 'admin.models.index',
-            'icon' => 'fas fa-wrench',
-        ],
-        [
-            'text' => 'Colores',
-            'route' => 'admin.colors.index',
-            'icon' => 'fas fa-palette',
-        ],
-        [
-            'text' => 'Tipos de vehículos',
-            'route' => 'admin.vehtypes.index',
-            'icon' => 'fas fa-thumbtack',
-        ],
-        [
-            'text' => 'Vehículos',
-            'route' => 'admin.vehicles.index',
-            'icon' => 'fas fa-truck-moving',
-        ],
-        ['header' => 'GESTIÓN DE PERSONAL'],
-        [
-            'text' => 'Tipos de empleados',
-            'route' => 'admin.emptypes.index',
-            'icon' => 'fas fa-thumbtack',
-        ],
-        [
-            'text' => 'Empleados',
-            'route' => 'admin.employees.index',
-            'icon' => 'fas fa-solid fa-user',
-        ],
-        [
-            'text' => 'Contratos',
-            'route' => 'admin.contracts.index',
-            'icon' => 'fas fa-solid fa-file-signature',
-        ],
-        [
-            'text' => 'Vacaciones',
-            'route' => 'admin.vacations.index',
-            'icon' => 'fas fa-solid fa-plane',
-        ],
-        [
-            'text' => 'Asistencias',
-            'route' => 'admin.attendances.index',
-            'icon' => 'fas fa-solid fa-user-check'
-        ],
-        ['header' => 'GESTIÓN DE ZONAS'],
-        [
-            'text' => 'Zonas',
-            'route' => 'admin.zones.index',
-            'icon' => 'fas fa-solid fa-map',
-        ],
-        [
-            'text' => 'Rutas',
-            'route' => 'admin.routes.index',
-            'icon' => 'fas fa-solid fa-route',
-        ],
-        ['header' => 'GESTIÓN DE PROGRAMACIÓN'],
-        [
-            'text' => 'Turnos',
-            'route' => 'admin.shifts.index',
-            'icon' => 'fas fa-solid fa-user-clock',
-        ],
-                [
-            'text' => 'Asignaciones',
-            'route' => 'admin.zoneassignments.index',
-            'icon' => 'fas fa-solid fa-list',
-        ],
-        [
-            'text' => 'Programación',
-            'route' => 'admin.schedules.index',
-            'icon' => 'fas fa-solid fa-clipboard-list',
+    [
+        'type' => 'darkmode-widget',
+        'topnav_right' => true,
+    ],
+
+    [
+        'text' => 'Gestión de Vehículos',
+        'icon' => 'fas fa-car',
+        'submenu' => [
+            [
+                'text' => 'Marcas',
+                'route' => 'admin.brands.index',
+                'icon' => 'fas fa-copyright',
+            ],
+            [
+                'text' => 'Modelos',
+                'route' => 'admin.models.index',
+                'icon' => 'fas fa-wrench',
+            ],
+            [
+                'text' => 'Colores',
+                'route' => 'admin.colors.index',
+                'icon' => 'fas fa-palette',
+            ],
+            [
+                'text' => 'Tipos de vehículos',
+                'route' => 'admin.vehtypes.index',
+                'icon' => 'fas fa-thumbtack',
+            ],
+            [
+                'text' => 'Vehículos',
+                'route' => 'admin.vehicles.index',
+                'icon' => 'fas fa-truck-moving',
+            ],
         ],
     ],
+
+    [
+        'text' => 'Gestión de Personal',
+        'icon' => 'fas fa-users-cog',
+        'submenu' => [
+            [
+                'text' => 'Tipos de empleados',
+                'route' => 'admin.emptypes.index',
+                'icon' => 'fas fa-thumbtack',
+            ],
+            [
+                'text' => 'Empleados',
+                'route' => 'admin.employees.index',
+                'icon' => 'fas fa-user',
+            ],
+            [
+                'text' => 'Contratos',
+                'route' => 'admin.contracts.index',
+                'icon' => 'fas fa-file-signature',
+            ],
+            [
+                'text' => 'Vacaciones',
+                'route' => 'admin.vacations.index',
+                'icon' => 'fas fa-plane',
+            ],
+            [
+                'text' => 'Asistencias',
+                'route' => 'admin.attendances.index',
+                'icon' => 'fas fa-user-check',
+            ],
+        ],
+    ],
+
+    [
+        'text' => 'Gestión de Zonas',
+        'icon' => 'fas fa-map-marked-alt',
+        'submenu' => [
+            [
+                'text' => 'Zonas',
+                'route' => 'admin.zones.index',
+                'icon' => 'fas fa-map',
+            ],
+            [
+                'text' => 'Rutas',
+                'route' => 'admin.routes.index',
+                'icon' => 'fas fa-route',
+            ],
+        ],
+    ],
+
+    [
+        'text' => 'Gestión de Programación',
+        'icon' => 'fas fa-calendar-alt',
+        'submenu' => [
+            [
+                'text' => 'Turnos',
+                'route' => 'admin.shifts.index',
+                'icon' => 'fas fa-user-clock',
+            ],
+            [
+                'text' => 'Asignaciones',
+                'route' => 'admin.zoneassignments.index',
+                'icon' => 'fas fa-list',
+            ],
+            [
+                'text' => 'Programación',
+                'route' => 'admin.schedules.index',
+                'icon' => 'fas fa-clipboard-list',
+            ],
+        ],
+    ],
+],
+
 
     /*
     |--------------------------------------------------------------------------
