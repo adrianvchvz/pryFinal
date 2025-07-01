@@ -40,15 +40,15 @@
                     <div class="card-icon">🎓</div>
                     <div class="card-content">
                         <h5 class="card-title">USAT</h5>
-                        <p class="card-subtitle">Universidad Católica Santo Toribio de Mogrovejo</p>
+                        <p class="card-subtitle"> <br> <br> Universidad Católica Santo Toribio de Mogrovejo</p>
                     </div>
                 </div>
 
                 <div class="detail-card team-card">
                     <div class="card-icon">👥</div>
                     <div class="card-content">
-                        <h5 class="card-title">Grupo 1</h5>
-                        <p class="card-subtitle">Equipo de Desarrollo</p>
+                        <h5 class="card-title">Equipo de desarrollo</h5>
+                        <p class="card-subtitle"> <br> <br> Diaz Cruz Eduardo <br> Santisteban Vargas Iris  <br> Vera Chavez Alex  <br> Yomona Parraguez Cinthya </p>
                     </div>
                 </div>
             </div>
