@@ -4,6 +4,7 @@ namespace App\Http\Controllers\admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Employee;
+use App\Models\Scheduleday;
 use App\Models\Scheduledetail;
 use App\Models\Shift;
 use App\Models\Vehicle;
@@ -54,31 +55,34 @@ class ScheduledetailController extends Controller
         $detalle = Scheduledetail::with('zone', 'vehicle', 'shift')->findOrFail($id);
         $fecha = $detalle->scheduleday->date;
         $scheduledayId = $detalle->scheduleday_id;
+        $turnoActualId = $detalle->shift_id;
 
-        // Ayudantes asignados actualmente
-        $ayudantesAsignados = DB::table('scheduledetailoccupants')
-            ->where('scheduledetail_id', $detalle->id)
-            ->pluck('employee_id')
-            ->toArray();
+        // Ayudantes ya asignados a otras zonas en el mismo turno ese día
+        $ayudantesOcupados = DB::table('scheduledetailoccupants')
+            ->join('scheduledetails', 'scheduledetailoccupants.scheduledetail_id', '=', 'scheduledetails.id')
+            ->where('scheduledetails.scheduleday_id', $scheduledayId)
+            ->where('scheduledetails.id', '!=', $detalle->id)
+            ->where('scheduledetails.shift_id', $turnoActualId)
+            ->pluck('employee_id');
 
-        // IDs de empleados con vacaciones en esa fecha
+        // Conductores ya asignados a otras zonas en el mismo turno ese día
+        $conductoresOcupados = DB::table('scheduledetails')
+            ->where('scheduleday_id', $scheduledayId)
+            ->where('id', '!=', $detalle->id)
+            ->where('shift_id', $turnoActualId)
+            ->pluck('conductor_id');
+
+        // Empleados con vacaciones en esa fecha
         $empleadosConVacaciones = DB::table('vacations')
             ->where('start_date', '<=', $fecha)
             ->where('end_date', '>=', $fecha)
             ->pluck('employee_id');
 
-        // Empleados ya asignados como conductores ese día (excepto este registro)
-        $conductoresOcupados = DB::table('scheduledetails')
-            ->where('scheduleday_id', $scheduledayId)
-            ->where('id', '!=', $detalle->id)
-            ->pluck('conductor_id');
-
-        // Ayudantes ya asignados ese día en otras zonas
-        $ayudantesOcupados = DB::table('scheduledetailoccupants')
-            ->join('scheduledetails', 'scheduledetailoccupants.scheduledetail_id', '=', 'scheduledetails.id')
-            ->where('scheduledetails.scheduleday_id', $scheduledayId)
-            ->where('scheduledetails.id', '!=', $detalle->id)
-            ->pluck('employee_id');
+        // Ayudantes ya asignados a este detalle
+        $ayudantesAsignados = DB::table('scheduledetailoccupants')
+            ->where('scheduledetail_id', $detalle->id)
+            ->pluck('employee_id')
+            ->toArray();
 
         // Conductores disponibles + el actual
         $conductores = Employee::whereHas('type', fn($q) => $q->where('name', 'CONDUCTOR'))
@@ -89,7 +93,7 @@ class ScheduledetailController extends Controller
             })
             ->pluck(DB::raw("CONCAT(names, ' ', lastnames)"), 'id');
 
-        // Ayudantes disponibles + los ya asignados en este detalle
+        // Ayudantes disponibles + los que ya están asignados a este detalle
         $ayudantes = Employee::whereHas('type', fn($q) => $q->where('name', 'AYUDANTE'))
             ->whereNotIn('id', $empleadosConVacaciones)
             ->where(function ($query) use ($ayudantesOcupados, $ayudantesAsignados) {
@@ -111,38 +115,80 @@ class ScheduledetailController extends Controller
         ));
     }
 
+
     /**
      * Update the specified resource in storage.
      */
     public function update(Request $request, string $id)
     {
         $request->validate([
-            'conductor_id' => 'required|exists:employees,id',
-            'ayudantes_ids' => 'required|array|min:1',
-            'vehicle_id' => 'required|exists:vehicles,id',
-            'shift_id' => 'required|exists:shifts,id',
+            'conductor_id'   => 'required|exists:employees,id',
+            'ayudantes_ids'  => 'required|array|min:1',
+            'shift_id'       => 'required|exists:shifts,id',
+            'vehicle_id'     => 'required|exists:vehicles,id',
         ]);
 
-        $detalle = Scheduledetail::findOrFail($id);
-        $detalle->conductor_id = $request->conductor_id;
-        $detalle->vehicle_id = $request->vehicle_id;
-        $detalle->shift_id = $request->shift_id;
-        $detalle->status = 'COMPLETO';
-        $detalle->save();
+        try {
+            $detalle = Scheduledetail::findOrFail($id);
+            $scheduleday = $detalle->scheduleday;
 
-        // Ayudantes
-        DB::table('scheduledetailoccupants')->where('scheduledetail_id', $detalle->id)->delete();
-        foreach ($request->ayudantes_ids as $aid) {
-            DB::table('scheduledetailoccupants')->insert([
-                'scheduledetail_id' => $detalle->id,
-                'employee_id' => $aid,
-                'created_at' => now(),
-                'updated_at' => now(),
+            $fecha = $scheduleday->date;
+            $turnoId = $request->shift_id;
+
+            // Verificar si el conductor ya está asignado en otro detalle con el mismo turno ese día
+            $conductorOcupado = Scheduledetail::whereHas('scheduleday', function ($q) use ($fecha) {
+                $q->where('date', $fecha);
+            })
+                ->where('shift_id', $turnoId)
+                ->where('conductor_id', $request->conductor_id)
+                ->where('id', '!=', $detalle->id)
+                ->exists();
+
+            if ($conductorOcupado) {
+                return response()->json(['message' => 'El conductor ya está asignado en otra zona con el mismo turno.'], 422);
+            }
+
+            // Verificar ayudantes
+            foreach ($request->ayudantes_ids as $aid) {
+                $ayudanteOcupado = DB::table('scheduledetailoccupants')
+                    ->join('scheduledetails', 'scheduledetailoccupants.scheduledetail_id', '=', 'scheduledetails.id')
+                    ->join('scheduledays', 'scheduledetails.scheduleday_id', '=', 'scheduledays.id')
+                    ->where('scheduledays.date', $fecha)
+                    ->where('scheduledetails.shift_id', $turnoId)
+                    ->where('scheduledetailoccupants.employee_id', $aid)
+                    ->where('scheduledetailoccupants.scheduledetail_id', '!=', $detalle->id)
+                    ->exists();
+
+                if ($ayudanteOcupado) {
+                    return response()->json(['message' => 'Uno de los ayudantes ya está asignado en otra zona con el mismo turno.'], 422);
+                }
+            }
+
+            // Actualizar asignación
+            $detalle->update([
+                'shift_id'     => $request->shift_id,
+                'vehicle_id'   => $request->vehicle_id,
+                'conductor_id' => $request->conductor_id,
+                'status'       => 'COMPLETO',
             ]);
-        }
 
-        return response()->json(['message' => 'Asignación actualizada correctamente.'], 200);
+            DB::table('scheduledetailoccupants')->where('scheduledetail_id', $detalle->id)->delete();
+            foreach ($request->ayudantes_ids as $aid) {
+                DB::table('scheduledetailoccupants')->insert([
+                    'scheduledetail_id' => $detalle->id,
+                    'employee_id' => $aid,
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ]);
+            }
+
+            return response()->json(['message' => 'Asignación actualizada correctamente.'], 200);
+        } catch (\Throwable $th) {
+            return response()->json(['message' => 'Hubo un error al actualizar: ' . $th->getMessage()], 500);
+        }
     }
+
+
     /**
      * Remove the specified resource from storage.
      */
