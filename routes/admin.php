@@ -10,13 +10,18 @@ use App\Http\Controllers\admin\EmployeeController;
 use App\Http\Controllers\admin\EmployeetypeController;
 use App\Http\Controllers\admin\RouteController;
 use App\Http\Controllers\admin\RoutezoneController;
+use App\Http\Controllers\admin\ScheduleController;
+use App\Http\Controllers\admin\ScheduledayController;
+use App\Http\Controllers\admin\ScheduledetailController;
 use App\Http\Controllers\admin\ShiftController;
 use App\Http\Controllers\admin\VacationController;
 use App\Http\Controllers\admin\VehicleController;
 use App\Http\Controllers\admin\VehicleimageController;
 use App\Http\Controllers\admin\VehicletypeController;
+use App\Http\Controllers\admin\ZoneassignmentController;
 use App\Http\Controllers\admin\ZoneController;
 use App\Http\Controllers\admin\ZonecoordController;
+use App\Models\Scheduledetail;
 use Illuminate\Support\Facades\Route;
 
 Route::resource('/', AdminController::class)->names('admin');
@@ -35,6 +40,7 @@ Route::post('vehicles/images/{image}/set-profile', [VehicleimageController::clas
 
 Route::get('employees/search', [EmployeeController::class, 'search'])->name('admin.employees.search');
 Route::get('employees/search-vacation', [EmployeeController::class, 'searchVacation'])->name('admin.employees.searchVacation');
+Route::get('employees/available', [EmployeeController::class, 'available'])->name('admin.employees.available');
 Route::resource('/employeetypes', EmployeetypeController::class)->names('admin.emptypes');
 Route::resource('/employees', EmployeeController::class)->names('admin.employees');
 
@@ -52,7 +58,19 @@ Route::resource('/zonecoords', ZonecoordController::class)->names('admin.zonecoo
 
 Route::resource('/routes', RouteController::class)->names('admin.routes');
 Route::resource('/routezones', RoutezoneController::class)->names('admin.routezones');
-Route::get('routezones/create/{route_id}', [RoutezoneController::class, 'create'])
-    ->name('admin.routezones.create');
+Route::get('routezones/create/{route_id}', [RoutezoneController::class, 'create'])->name('admin.routezones.create');
 
 Route::resource('/shifts', ShiftController::class)->names('admin.shifts');
+
+Route::resource('/zoneassignments', ZoneassignmentController::class)->names('admin.zoneassignments');
+Route::resource('/schedules', ScheduleController::class)->names('admin.schedules');
+Route::resource('/scheduledays', ScheduledayController::class)->names('admin.scheduledays');
+Route::resource('/scheduledetails', ScheduledetailController::class)->names('admin.scheduledetails');
+
+Route::get('/schedules/{id}/edit-days', [ScheduledayController::class, 'editDays'])->name('admin.schedules.editDays');
+
+
+
+
+
+

@@ -2,18 +2,17 @@
 
 namespace App\Models;
 
-use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Employee extends Model
+class Scheduleday extends Model
 {
     use HasFactory;
 
     protected $guarded = [];
 
-    public function type()
+    public function schedule()
     {
-        return $this->belongsTo(Employeetype::class, 'type_id');
+        return $this->belongsTo(Schedule::class);
     }
 }

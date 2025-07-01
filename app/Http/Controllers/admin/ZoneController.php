@@ -27,7 +27,7 @@ class ZoneController extends Controller
                     <i class="fas fa-map-marker-alt"></i></a>';
                 })
                 ->addColumn('map', function ($zone) {
-                    return '<button class="btn btn-success btn-sm btnMap" id=' . $zone->id . '>
+                    return '<button class="btn btn-info btn-sm btnMap" id=' . $zone->id . '>
                     <i class="fas fa-map-marked-alt"></i></button>';
                 })
                 ->addColumn('edit', function ($zone) {

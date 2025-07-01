@@ -57,7 +57,7 @@
         </div>
         <div class="form-row">
             <div class="form-group col-6">
-                {!! Form::label('birthdate', 'Fecha de cumpleaños') !!}
+                {!! Form::label('birthdate', 'Fecha de nacimiento') !!}
                 {!! Form::date('birthdate', null, ['class' => 'form-control', 'required']) !!}
             </div>
             <div class="form-group col-6">
