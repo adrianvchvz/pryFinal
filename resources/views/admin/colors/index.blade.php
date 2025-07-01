@@ -150,7 +150,7 @@
         }
 
         .btnEditar {
-            background: #2196F3;
+            background: #28a745;
             border: none;
             color: white;
             padding: 6px 12px;
@@ -161,7 +161,7 @@
         }
 
         .btnEditar:hover {
-            background: #1976D2;
+            background: #28a745;
             transform: translateY(-1px);
         }
 

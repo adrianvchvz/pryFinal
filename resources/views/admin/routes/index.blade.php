@@ -16,7 +16,7 @@
     --success-green: #4CAF50;
     --warning-orange: #FF9800;
     --danger-red: #F44336;
-    --info-blue: #2196F3;
+    --info-blue: #28a745;
 }
 
 .content-wrapper {
@@ -197,7 +197,7 @@
 }
 
 .btnEditar {
-    background: #2196F3;
+    background: #28a745;
     border: none;
     color: white;
     padding: 8px 12px;
@@ -209,7 +209,7 @@
 }
 
 .btnEditar:hover {
-    background: #1976D2;
+    background: #28a745;
     transform: translateY(-1px);
 }
 
@@ -409,7 +409,7 @@
 <div class="routes-header">
     <h1 class="routes-title">Rutas</h1>
     <button type="button" class="btn btn-new-route" id="btnNuevo">
-        <i class="fas fa-folder-plus"></i> Nuevo
+        Nuevo
     </button>
 </div>
 

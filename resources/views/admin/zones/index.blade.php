@@ -16,7 +16,7 @@
     --success-green: #4CAF50;
     --warning-orange: #FF9800;
     --danger-red: #F44336;
-    --info-blue: #2196F3;
+    --info-blue: #28a745;
 }
 
 .content-wrapper {
@@ -68,7 +68,7 @@
 }
 
 .btn-primary i {
-    margin-right: 8px;
+    margin-right: 3px;
 }
 
 .card-body {
@@ -159,7 +159,7 @@
 
 .model-code {
     background: #E3F2FD;
-    color: #1976D2;
+    color: #28a745;
     padding: 4px 8px;
     border-radius: 4px;
     font-family: 'Courier New', monospace;
@@ -187,7 +187,7 @@
 }
 
 .btnEditar {
-    background: #2196F3;
+    background: #28a745;
     border: none;
     color: white;
     padding: 8px 12px;
@@ -199,7 +199,7 @@
 }
 
 .btnEditar:hover {
-    background: #1976D2;
+    background: #28a745;
     transform: translateY(-1px);
 }
 
@@ -346,6 +346,8 @@
     font-weight: 600;
 }
 
+
+
 .swal2-popup {
     border-radius: 12px;
 }
@@ -403,7 +405,7 @@
 <div class="models-header">
     <h1 class="models-title">Zonas</h1>
     <button type="button" class="btn btn-new-model" id="btnNuevo">
-        <i class="fas fa-folder-plus"></i> Nuevo
+        Nuevo
     </button>
 </div>
 
