@@ -15,4 +15,9 @@ class Scheduleday extends Model
     {
         return $this->belongsTo(Schedule::class);
     }
+
+    public function details()
+    {
+        return $this->hasMany(Scheduledetail::class);
+    }
 }

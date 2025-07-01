@@ -102,7 +102,8 @@ class ScheduleController extends Controller
                         'vehicle_id' => $za->vehicle_id,
                         'shift_id' => $za->shift_id,
                         'conductor_id' => $conductorId,
-                        'status' => 'COMPLETO', // por defecto
+                        'status' => 'COMPLETO',
+                        'trip_status' => 'NO INICIADO',
                     ]);
 
                     // Validar ayudantes
@@ -160,25 +161,49 @@ class ScheduleController extends Controller
                 ->addColumn('name', function ($day) {
                     return $day->schedule->name ?? '---';
                 })
+                ->addColumn('date', function ($day) {
+                    return $day->date ?? '---';
+                })
                 ->addColumn('status', function ($day) {
                     return $day->status ?? '---';
                 })
-                ->addColumn('show', function ($schedule) {
-                    return '<a href="' . route('admin.scheduledays.show', $schedule->id) . '" class="btn btn-primary btn-sm btnShow">
+                ->addColumn('trip_status', function ($day) {
+                    $total = $day->details()->count();
+
+                    $iniciados = $day->details()->where('trip_status', 'INICIADO')->count();
+                    $finalizados = $day->details()->where('trip_status', 'FINALIZADO')->count();
+
+                    if ($finalizados === $total && $total > 0) return 'FINALIZADO';
+                    if ($iniciados > 0) return 'INICIADO';
+
+                    return 'NO INICIADO';
+                })
+                ->addColumn('start_trip', function ($day) {
+                    if ($day->status === 'COMPLETO') {
+                        return '<form class="frmStartTrip d-inline" action="' . route('admin.scheduledays.iniciarRecorrido', $day->id) . '" method="POST">' . csrf_field() . method_field('POST') . '
+                        <button type="submit" class="btn btn-warning btn-sm" title="Iniciar recorrido">
+                        <i class="fas fa-play text-white"></i></button></form>';
+                    } else {
+                        return '<button class="btn btn-secondary btn-sm" disabled>No disponible</button>';
+                    }
+                })
+                ->addColumn('show', function ($day) {
+                    return '<a href="' . route('admin.scheduledays.show', $day->id) . '" class="btn btn-primary btn-sm btnShow">
                     <i class="fas fa-eye"></i></a>';
                 })
-                ->addColumn('delete', function ($schedule) {
-                    return '<form action="' . route('admin.scheduledays.destroy', $schedule->id) . '" method="POST" 
-                            class="frmDelete d-inline">' . csrf_field() . method_field('DELETE') . '
-                            <button type="submit" class="btn btn-danger btn-sm"><i class="fas fa-trash"></i>
-                            </button></form>';
+                ->addColumn('delete', function ($day) {
+                    return '<form action="' . route('admin.scheduledays.destroy', $day->id) . '" method="POST" 
+                        class="frmDelete d-inline">' . csrf_field() . method_field('DELETE') . '
+                        <button type="submit" class="btn btn-danger btn-sm"><i class="fas fa-trash"></i>
+                        </button></form>';
                 })
-                ->rawColumns(['name', 'show', 'delete'])
+                ->rawColumns(['start_trip', 'show', 'delete'])
                 ->make(true);
         } else {
             return view('admin.schedules.show', compact('schedule'));
         }
     }
+
 
     /**
      * Show the form for editing the specified resource.
