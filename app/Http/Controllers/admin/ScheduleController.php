@@ -5,8 +5,11 @@ namespace App\Http\Controllers\admin;
 use App\Http\Controllers\Controller;
 use App\Models\Schedule;
 use App\Models\Scheduleday;
+use App\Models\Scheduledetail;
+use App\Models\Zoneassignment;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Yajra\DataTables\Facades\DataTables;
 
 class ScheduleController extends Controller
@@ -58,16 +61,12 @@ class ScheduleController extends Controller
             'name' => 'required|unique:schedules',
             'start_date' => 'required|date',
             'end_date' => 'required|date|after_or_equal:start_date',
-        ], [
-            'name.unique' => 'El nombre ya está en uso.',
-            'end_date.after_or_equal' => 'La fecha de fin debe ser igual o mayor que la de inicio.',
         ]);
 
         try {
-            $startDate = $request->start_date;
-            $endDate = $request->end_date;
+            $startDate = Carbon::parse($request->start_date);
+            $endDate = Carbon::parse($request->end_date);
 
-            // Validar solapamiento de fechas
             $overlap = Schedule::where('start_date', '<=', $endDate)
                 ->where('end_date', '>=', $startDate)
                 ->exists();
@@ -76,17 +75,68 @@ class ScheduleController extends Controller
                 return response()->json(['message' => 'Ya existe una programación entre este rango de fechas.'], 422);
             }
 
-            // 1. Crear programación
             $schedule = Schedule::create($request->only(['name', 'start_date', 'end_date']));
+            $zoneassignments = Zoneassignment::all();
 
-            // 2. Crear los días automáticamente
-            $start = Carbon::parse($schedule->start_date);
-            $end = Carbon::parse($schedule->end_date);
-
-            for ($date = $start->copy(); $date->lte($end); $date->addDay()) {
-                $schedule->days()->create([
-                    'date' => $date->toDateString()
+            for ($date = $startDate->copy(); $date->lte($endDate); $date->addDay()) {
+                $scheduleday = $schedule->days()->create([
+                    'date' => $date->toDateString(),
+                    'status' => 'COMPLETO', // por defecto
                 ]);
+
+                foreach ($zoneassignments as $za) {
+                    $incompleto = false;
+                    $conductorId = $za->conductor_id;
+
+                    // Validar vacaciones del conductor
+                    $tieneVacacionesConductor = $this->empleadoTieneVacaciones($conductorId, $date);
+                    if ($tieneVacacionesConductor) {
+                        $conductorId = null;
+                        $incompleto = true;
+                    }
+
+                    // Crear detalle
+                    $detail = Scheduledetail::create([
+                        'scheduleday_id' => $scheduleday->id,
+                        'zone_id' => $za->zone_id,
+                        'vehicle_id' => $za->vehicle_id,
+                        'shift_id' => $za->shift_id,
+                        'conductor_id' => $conductorId,
+                        'status' => 'COMPLETO', // por defecto
+                    ]);
+
+                    // Validar ayudantes
+                    $ayudantes = DB::table('zoneassignmenthelpers')
+                        ->where('assignment_id', $za->id)
+                        ->pluck('employee_id');
+
+                    $ocupantesAsignados = 0;
+
+                    foreach ($ayudantes as $aid) {
+                        $tieneVacaciones = $this->empleadoTieneVacaciones($aid, $date);
+                        if (!$tieneVacaciones) {
+                            DB::table('scheduledetailoccupants')->insert([
+                                'scheduledetail_id' => $detail->id,
+                                'employee_id' => $aid,
+                                'created_at' => now(),
+                                'updated_at' => now()
+                            ]);
+                            $ocupantesAsignados++;
+                        }
+                    }
+
+                    // Si no hay conductor o no se asignó al menos un ayudante, marcar INCOMPLETO
+                    if (is_null($conductorId) || $ocupantesAsignados === 0) {
+                        $detail->status = 'INCOMPLETO';
+                        $detail->save();
+                        $incompleto = true;
+                    }
+
+                    if ($incompleto) {
+                        $scheduleday->status = 'INCOMPLETO';
+                        $scheduleday->save();
+                    }
+                }
             }
 
             return response()->json(['message' => 'Programación registrada correctamente'], 200);
@@ -110,24 +160,25 @@ class ScheduleController extends Controller
                 ->addColumn('name', function ($day) {
                     return $day->schedule->name ?? '---';
                 })
+                ->addColumn('status', function ($day) {
+                    return $day->status ?? '---';
+                })
                 ->addColumn('show', function ($schedule) {
-                    return '<a href="' . route('admin.schedules.destroy', $schedule->id) . '" class="btn btn-primary btn-sm btnShow">
+                    return '<a href="' . route('admin.scheduledays.show', $schedule->id) . '" class="btn btn-primary btn-sm btnShow">
                     <i class="fas fa-eye"></i></a>';
                 })
-                ->addColumn('delete', function ($coord) {
-                    return '<form action="' . route('admin.scheduledays.destroy', $coord->id) . '" method="POST" 
+                ->addColumn('delete', function ($schedule) {
+                    return '<form action="' . route('admin.scheduledays.destroy', $schedule->id) . '" method="POST" 
                             class="frmDelete d-inline">' . csrf_field() . method_field('DELETE') . '
                             <button type="submit" class="btn btn-danger btn-sm"><i class="fas fa-trash"></i>
                             </button></form>';
                 })
-                ->rawColumns(['name','show', 'delete'])
+                ->rawColumns(['name', 'show', 'delete'])
                 ->make(true);
         } else {
             return view('admin.schedules.show', compact('schedule'));
         }
     }
-
-
 
     /**
      * Show the form for editing the specified resource.
@@ -207,9 +258,6 @@ class ScheduleController extends Controller
         }
     }
 
-
-
-
     /**
      * Remove the specified resource from storage.
      */
@@ -222,5 +270,29 @@ class ScheduleController extends Controller
         } catch (\Throwable $th) {
             return response()->json(['message' => 'Hubo un error en la eliminación' . $th->getMessage()], 500);
         }
+    }
+
+    // Método de apoyo
+    private function empleadoTieneVacaciones($employeeId, $fecha)
+    {
+        // Obtener contrato
+        $contrato = DB::table('contracts')
+            ->where('employee_id', $employeeId)
+            ->orderByDesc('start_date')
+            ->first();
+
+        // Si no tiene contrato o si es eventual, no se valida vacaciones
+        if (!$contrato || $contrato->end_date != null) {
+            return false;
+        }
+
+        // Validar vacaciones
+        $tieneVacaciones = DB::table('vacations')
+            ->where('employee_id', $employeeId)
+            ->where('start_date', '<=', $fecha)
+            ->where('end_date', '>=', $fecha)
+            ->exists();
+
+        return $tieneVacaciones;
     }
 }

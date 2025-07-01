@@ -17,7 +17,7 @@ return new class extends Migration
             $table->unsignedBigInteger('zone_id');
             $table->unsignedBigInteger('vehicle_id');
             $table->unsignedBigInteger('shift_id');
-            $table->unsignedBigInteger('conductor_id');
+            $table->unsignedBigInteger('conductor_id')->nullable();
             $table->string('status');
             $table->timestamps();
 

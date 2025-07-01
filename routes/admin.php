@@ -12,6 +12,7 @@ use App\Http\Controllers\admin\RouteController;
 use App\Http\Controllers\admin\RoutezoneController;
 use App\Http\Controllers\admin\ScheduleController;
 use App\Http\Controllers\admin\ScheduledayController;
+use App\Http\Controllers\admin\ScheduledetailController;
 use App\Http\Controllers\admin\ShiftController;
 use App\Http\Controllers\admin\VacationController;
 use App\Http\Controllers\admin\VehicleController;
@@ -20,6 +21,7 @@ use App\Http\Controllers\admin\VehicletypeController;
 use App\Http\Controllers\admin\ZoneassignmentController;
 use App\Http\Controllers\admin\ZoneController;
 use App\Http\Controllers\admin\ZonecoordController;
+use App\Models\Scheduledetail;
 use Illuminate\Support\Facades\Route;
 
 Route::resource('/', AdminController::class)->names('admin');
@@ -63,5 +65,12 @@ Route::resource('/shifts', ShiftController::class)->names('admin.shifts');
 Route::resource('/zoneassignments', ZoneassignmentController::class)->names('admin.zoneassignments');
 Route::resource('/schedules', ScheduleController::class)->names('admin.schedules');
 Route::resource('/scheduledays', ScheduledayController::class)->names('admin.scheduledays');
+Route::resource('/scheduledetails', ScheduledetailController::class)->names('admin.scheduledetails');
+
+Route::get('/schedules/{id}/edit-days', [ScheduledayController::class, 'editDays'])->name('admin.schedules.editDays');
+
+
+
+
 
 

@@ -2,35 +2,31 @@
 
 @section('title', 'Programación')
 
-<!--@section('content_header')
-@stop-->
-
 @section('content')
     <div class="p-2"></div>
     <div class="card">
         <div class="card-header">
-            <button type="button" class="btn btn-success float-right ml-2" id="btnEditar" data-id="{{ $schedule->id }}">
-                <i class="fas fa-folder-plus"></i> Editar
-            </button>
-            <h3>Días programados</h3>
+            <h3>Asignaciones del día {{ $scheduleday->date }}</h3>
         </div>
         <div class="card-body">
             <table class="display" id="datatable">
                 <thead>
                     <tr>
-                        <th>Programación</th>
-                        <th>Día</th>
+                        <th>Zona</th>
+                        <th>Vehículo</th>
+                        <th>Turno</th>
+                        <th>Conductor</th>
+                        <th>Ayudantes</th>
                         <th>Estado</th>
                         <th></th>
                         <th></th>
                     </tr>
                 </thead>
-                <tbody>
-                </tbody>
+                <tbody></tbody>
             </table>
         </div>
         <div class="card-footer">
-            <a href="{{ route('admin.schedules.index') }}" class="btn btn-danger float-right">
+            <a href="{{ route('admin.schedules.show', $scheduleday->schedule_id) }}" class="btn btn-danger float-right">
                 <i></i>Retornar</a>
         </div>
     </div>
@@ -65,25 +61,33 @@
 @endsection
 
 @section('js')
-
     <script>
         $(document).ready(function() {
             $('#datatable').DataTable({
                 "language": {
                     "url": "//cdn.datatables.net/plug-ins/1.10.16/i18n/Spanish.json"
                 },
-                "ajax": "{{ route('admin.schedules.show', $schedule->id) }}",
+                "ajax": "{{ route('admin.scheduledays.show', $scheduleday->id) }}",
                 "columns": [{
-                        "data": "name"
+                        "data": "zone_name"
                     },
                     {
-                        "data": "date"
+                        "data": "vehicle_name"
+                    },
+                    {
+                        "data": "shift_name"
+                    },
+                    {
+                        "data": "conductor_fullname"
+                    },
+                    {
+                        "data": "ayudantes"
                     },
                     {
                         "data": "status"
                     },
                     {
-                        "data": "show",
+                        "data": "edit",
                         "orderable": false,
                         "searchable": false
                     },
@@ -91,7 +95,7 @@
                         "data": "delete",
                         "orderable": false,
                         "searchable": false
-                    },
+                    }
                 ],
                 "rowCallback": function(row, data) {
                     if (data.status === 'COMPLETO') {
@@ -101,47 +105,96 @@
                     }
                 }
             });
-        })
+        });
 
-        $('#btnEditar').click(function() {
-            let scheduleId = $(this).data('id');
-
+        $('#btnNuevo').click(function() {
             $.ajax({
-                url: '/admin/schedules/' + scheduleId + '/edit-days',
-                type: 'GET',
+                url: "{{ route('admin.scheduledetails.create', ['scheduleday_id' => $scheduleday->id]) }}",
+                type: "GET",
                 success: function(response) {
-                    $('.modal-title').html("Asignar reemplazos");
+                    $('.modal-title').html("Nueva asignación del día");
                     $('#ModalCenter .modal-body').html(response);
                     $('#ModalCenter').modal('show');
 
                     $('#ModalCenter form').on('submit', function(e) {
                         e.preventDefault();
-                        let form = $(this);
-                        let formData = new FormData(this);
+                        var form = $(this);
+                        var formdata = new FormData(this);
                         $.ajax({
                             url: form.attr('action'),
                             type: form.attr('method'),
-                            data: formData,
+                            data: formdata,
                             processData: false,
                             contentType: false,
                             success: function(response) {
                                 $('#ModalCenter').modal('hide');
                                 refreshTable();
-                                Swal.fire("Éxito", response.message, "success");
+                                Swal.fire({
+                                    title: "Proceso exitoso",
+                                    icon: "success",
+                                    text: response.message,
+                                    draggable: true
+                                });
                             },
                             error: function(xhr) {
-                                Swal.fire("Error", xhr.responseJSON.message,
-                                    "error");
+                                var response = xhr.responseJSON;
+                                Swal.fire({
+                                    title: "Error",
+                                    icon: "error",
+                                    text: response.message,
+                                    draggable: true
+                                });
                             }
-                        });
-                    });
-                },
-                error: function(xhr) {
-                    Swal.fire("Error", "No se pudo cargar el formulario", "error");
+                        })
+                    })
                 }
-            });
+            })
         });
 
+        $(document).on('click', '.btnEditar', function() {
+            var id = $(this).attr("id");
+            $.ajax({
+                url: "{{ route('admin.scheduledetails.edit', 'id') }}".replace('id', id),
+                type: "GET",
+                success: function(response) {
+                    $('.modal-title').html("Editar asignación del día");
+                    $('#ModalCenter .modal-body').html(response);
+                    $('#ModalCenter').modal('show');
+
+                    $('#ModalCenter form').on('submit', function(e) {
+                        e.preventDefault();
+                        var form = $(this);
+                        var formdata = new FormData(this);
+                        $.ajax({
+                            url: form.attr('action'),
+                            type: form.attr('method'),
+                            data: formdata,
+                            processData: false,
+                            contentType: false,
+                            success: function(response) {
+                                $('#ModalCenter').modal('hide');
+                                refreshTable();
+                                Swal.fire({
+                                    title: "Proceso exitoso",
+                                    icon: "success",
+                                    text: response.message,
+                                    draggable: true
+                                });
+                            },
+                            error: function(xhr) {
+                                var response = xhr.responseJSON;
+                                Swal.fire({
+                                    title: "Error",
+                                    icon: "error",
+                                    text: response.message,
+                                    draggable: true
+                                });
+                            }
+                        })
+                    })
+                }
+            })
+        });
 
         $(document).on('submit', '.frmDelete', function(e) {
             e.preventDefault();
@@ -153,10 +206,9 @@
                 showCancelButton: true,
                 confirmButtonColor: "#3085d6",
                 cancelButtonColor: "#d33",
-                confirmButtonText: "Si, eliminar!"
+                confirmButtonText: "Sí, eliminar!"
             }).then((result) => {
                 if (result.isConfirmed) {
-                    //this.submit();
                     $.ajax({
                         url: form.attr('action'),
                         type: form.attr('method'),
@@ -182,7 +234,7 @@
                     });
                 }
             });
-        })
+        });
 
         function refreshTable() {
             var table = $('#datatable').DataTable();
