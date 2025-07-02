@@ -19,6 +19,7 @@ return new class extends Migration
             $table->unsignedBigInteger('shift_id');
             $table->unsignedBigInteger('conductor_id')->nullable();
             $table->string('status');
+            $table->string('trip_status');
             $table->timestamps();
 
             $table->foreign('scheduleday_id')->references('id')->on('scheduledays');

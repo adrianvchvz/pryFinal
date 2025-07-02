@@ -437,6 +437,8 @@
                         <th>Programación</th>
                         <th>Día</th>
                         <th>Estado</th>
+                        <th>Recorrido</th>
+                        <th></th>
                         <th></th>
                         <th></th>
                     </tr>
@@ -493,6 +495,14 @@
                        
                     },
                     {
+                        "data": "trip_status"
+                    },
+                    {
+                        "data": "start_trip",
+                        "orderable": false,
+                        "searchable": false
+                    },
+                    {
                         "data": "show",
                         "orderable": false,
                         "searchable": false,
@@ -519,7 +529,14 @@
                     } else if (data.status === 'INCOMPLETO') {
                         $(row).addClass('status-incompleto');
                     }
+
+                    if (data.trip_status === 'INICIADO') {
+                        $(row).addClass('table-warning');
+                    } else if (data.trip_status === 'FINALIZADO') {
+                        $(row).addClass('table-success');
+                    }
                 }
+
             });
         })
 
@@ -601,6 +618,38 @@
                 }
             });
         })
+
+        $(document).on('submit', '.frmStartTrip', function(e) {
+            e.preventDefault();
+            let form = $(this);
+
+            Swal.fire({
+                title: "¿Iniciar recorrido?",
+                text: "Esto marcará como iniciado todas las zonas del día.",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#28a745",
+                cancelButtonColor: "#d33",
+                confirmButtonText: "Sí, iniciar"
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $.ajax({
+                        url: form.attr('action'),
+                        type: 'POST',
+                        data: form.serialize(),
+                        success: function(response) {
+                            refreshTable();
+                            Swal.fire("Éxito", response.message, "success");
+                        },
+                        error: function(xhr) {
+                            Swal.fire("Error", xhr.responseJSON?.message ||
+                                "No se pudo iniciar", "error");
+                        }
+                    });
+                }
+            });
+        });
+
 
         function refreshTable() {
             var table = $('#datatable').DataTable();

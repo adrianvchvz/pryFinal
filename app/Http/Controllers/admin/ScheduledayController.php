@@ -339,4 +339,46 @@ class ScheduledayController extends Controller
             ->where('end_date', '>=', $fecha)
             ->exists();
     }
+
+    public function iniciarRecorrido($id)
+    {
+        try {
+            $scheduleday = Scheduleday::with('details.shift')->findOrFail($id);
+
+            // 1. Validar que todas las zonas estén COMPLETAS
+            if ($scheduleday->details()->where('status', 'INCOMPLETO')->exists()) {
+                return response()->json(['message' => 'No se puede iniciar. Hay zonas incompletas.'], 422);
+            }
+
+            // 2. Validar asistencia
+            foreach ($scheduleday->details as $detalle) {
+                $fecha = $scheduleday->date;
+
+                // Validar conductor
+                if (!DB::table('attendances')->where('employee_id', $detalle->conductor_id)
+                    ->whereDate('date', $fecha)->exists()) {
+                    return response()->json(['message' => 'Conductor sin asistencia en ' . $detalle->zone->name], 422);
+                }
+
+                // Validar ayudantes
+                $ayudantes = DB::table('scheduledetailoccupants')
+                    ->where('scheduledetail_id', $detalle->id)
+                    ->pluck('employee_id');
+
+                foreach ($ayudantes as $aid) {
+                    if (!DB::table('attendances')->where('employee_id', $aid)
+                        ->whereDate('date', $fecha)->exists()) {
+                        return response()->json(['message' => 'Un ayudante no tiene asistencia en ' . $detalle->zone->name], 422);
+                    }
+                }
+            }
+
+            // 3. Todo OK: Actualizar estado de recorrido
+            $scheduleday->details()->update(['trip_status' => 'INICIADO']);
+
+            return response()->json(['message' => 'Recorrido iniciado correctamente.']);
+        } catch (\Throwable $th) {
+            return response()->json(['message' => 'Error: ' . $th->getMessage()], 500);
+        }
+    }
 }
