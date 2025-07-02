@@ -220,12 +220,11 @@ class ZoneassignmentController extends Controller
     public function destroy(string $id)
     {
         try {
-            DB::table('zoneassignmenthelpers')->where('assignment_id', $id)->delete();
-            Zoneassignment::destroy($id);
-
+            $assignment = Zoneassignment::find($id);
+            $assignment->delete();
             return response()->json(['message' => 'Asignación eliminada correctamente'], 200);
         } catch (\Throwable $th) {
-            return response()->json(['message' => 'Error al eliminar: ' . $th->getMessage()], 500);
+            return response()->json(['message' => 'Hubo un error en la eliminación' . $th->getMessage()], 500);
         }
     }
 }
