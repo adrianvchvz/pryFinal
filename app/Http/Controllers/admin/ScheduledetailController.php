@@ -196,7 +196,14 @@ class ScheduledetailController extends Controller
     {
         try {
             $scheduledetail = Scheduledetail::find($id);
+
+            if (!$scheduledetail) {
+                return response()->json(['message' => 'Detalle no encontrado'], 404);
+            }
+
+            DB::table('scheduledetailoccupants')->where('scheduledetail_id', $id)->delete();
             $scheduledetail->delete();
+
             return response()->json(['message' => 'Asignación eliminada correctamente'], 200);
         } catch (\Throwable $th) {
             return response()->json(['message' => 'Hubo un error en la eliminación: ' . $th->getMessage()], 500);
