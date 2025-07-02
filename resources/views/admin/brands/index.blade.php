@@ -290,7 +290,7 @@
             <div class="brands-header">
                 <h1 class="brands-title">Marcas</h1>
                 <button type="button" class="btn btn-new-brand" id="btnNuevo">
-                    Nueva
+                    Nuevo
                 </button>
             </div>
 
