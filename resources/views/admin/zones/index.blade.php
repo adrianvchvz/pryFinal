@@ -473,7 +473,9 @@
                     {
                         "data": "description",
                         "render": function(data, type, row) {
-                            return '<span class="model-description" title="' + data + '">' + data + '</span>';
+                            data = data ?? '';
+                            return '<span class="type-description" title="' + data + '">' + data +
+                                '</span>';
                         }
                     },
                     {
