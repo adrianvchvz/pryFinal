@@ -34,7 +34,7 @@ class VacationController extends Controller
 
             return DataTables::of($vacations)
                 ->addColumn('employee_name', function ($v) {
-                    return $v->employee_names . ' ' . $v->employee_lastnames;
+                    return $v->employee_lastnames . ' ' . $v->employee_names;
                 })
                 ->addColumn('edit', function ($employee) {
                     return '<button class="btn btn-success btn-sm btnEditar" id="' . $employee->id . '">

@@ -446,9 +446,13 @@
                 },
                 {
                     "data": "description",
+                    
+
                     "render": function(data, type, row) {
-                        return '<span class="vehicle-type-description" title="' + data + '">' + data + '</span>';
-                    }
+                            data = data ?? '';
+                            return '<span class="vehicle-type-description" title="' + data + '">' + data +
+                                '</span>';
+                        }
                 },
                 {
                     "data": "created_at",

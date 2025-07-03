@@ -40,7 +40,7 @@ class ZoneassignmentController extends Controller
                     $ayudantes = DB::table('zoneassignmenthelpers')
                         ->join('employees', 'employees.id', '=', 'zoneassignmenthelpers.employee_id')
                         ->where('assignment_id', $za->id)
-                        ->select(DB::raw("CONCAT(employees.names, ' ', employees.lastnames) as fullname"))
+                        ->select(DB::raw("CONCAT(employees.lastnames, ' ', employees.names) as fullname"))
                         ->pluck('fullname')
                         ->toArray();
 

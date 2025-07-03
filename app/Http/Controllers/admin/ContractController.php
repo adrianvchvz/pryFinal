@@ -36,7 +36,7 @@ class ContractController extends Controller
         if ($request->ajax()) {
             return DataTables::of($contracts)
                 ->addColumn('employee_name', function ($contract) {
-                    return $contract->employee_names . ' ' . $contract->employee_lastnames;
+                    return $contract->employee_lastnames . ' ' . $contract->employee_names ;
                 })
                 ->addColumn('type_name', function ($contract) {
                     return $contract->contract_type_name; // <-- Este es el nombre del tipo de contrato
@@ -121,7 +121,7 @@ class ContractController extends Controller
         }
 
 
-        
+
     }
 
     /**
